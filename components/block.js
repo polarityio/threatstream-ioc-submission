@@ -1,63 +1,47 @@
 polarity.export = PolarityComponent.extend({
   details: Ember.computed.alias('block.data.details'),
-  programsToSearch: Ember.computed.alias('block.data.details.programsToSearch'),
-  activeTab: '',
-  programHasResultsMap: {},
-  dropdownExpanded: {},
-  init() {
-    this.set(
-      'activeTab',
-      this.get('programsToSearch').filter(({ id: programId }) =>
-        ['scopes', 'cwes', 'reports', 'reporters'].some((dataType) => {
-          const dataList = this.get('details')[dataType][programId];
-          return dataList && dataList.length;
-        })
-      )[0].id
-    );
-    this.set(
-      'programHasResultsMap',
-      this.get('programsToSearch').reduce(
-        (agg, { id: programId }) =>
-          Object.assign({}, agg, {
-            [programId]: ['scopes', 'cwes', 'reports', 'reporters'].some((dataType) => {
-              const dataList = this.get('details')[dataType][programId];
-              return dataList && dataList.length;
-            })
-          }),
-        {}
-      )
-    );
-    this._super(...arguments);
-  },
+  entitiesThatExistInTS: Ember.computed.alias('details.entitiesThatExistInTS'),
+  __message: '',
+  __errorMessage: '',
+  isRunning: '',
   actions: {
-    changeTab: function (tabName) {
-      this.set(`activeTab`, tabName);
-    },
-    toggleExpand: function (programId, dataType, index) {
-      const modifiedDropdownExpanded = Object.assign({}, this.get('dropdownExpanded'), {
-        [programId]: Object.assign(
-          {},
-          this.get('dropdownExpanded') && this.get('dropdownExpanded')[programId],
-          {
-            [dataType]: Object.assign(
-              {},
-              this.get('dropdownExpanded') &&
-                this.get('dropdownExpanded')[programId] &&
-                this.get('dropdownExpanded')[programId][dataType],
-              {
-                [index]: !(
-                  this.get('dropdownExpanded') &&
-                  this.get('dropdownExpanded')[programId] &&
-                  this.get('dropdownExpanded')[programId][dataType] &&
-                  this.get('dropdownExpanded')[programId][dataType][index]
-                )
-              }
-            )
-          }
-        )
-      });
+    deleteItem: function (intelId) {
+      const outerThis = this;
+      this.setMessage('');
+      this.setRunning(true);
+      this.get('block').notifyPropertyChange('data');
 
-      this.set(`dropdownExpanded`, modifiedDropdownExpanded);
+      this.sendIntegrationMessage({
+        data: {
+          action: 'deleteItem',
+          intelId
+        }
+      })
+        .then(({ newList }) => {
+          outerThis.set('entitiesThatExistInTS', newList);
+          outerThis.setMessage('Successfully Deleted IOC');
+        })
+        .catch((err) => {
+          outerThis.setErrorMessage(
+            'Failed to Delete IOC: ' + err.message || err.title || err.description || 'Unknown Reason'
+          );
+        })
+        .finally(() => {
+          outerThis.setRunning(false);
+          outerThis.get('block').notifyPropertyChange('data');
+        });
     }
+  },
+
+  setMessage(msg) {
+    this.set('__message', msg);
+  },
+
+  setErrorMessage(msg) {
+    this.set('__errorMessage', msg);
+  },
+
+  setRunning(isRunning) {
+    this.set('isRunning', isRunning);
   }
 });

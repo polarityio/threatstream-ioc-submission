@@ -2,7 +2,7 @@ module.exports = {
   name: 'Anomali ThreatStream IOC Submission',
   acronym: 'TSI',
   description: 'TS',
-  entityTypes: ['IPv4', 'IPv6', 'domain'],
+  entityTypes: ['IPv4', 'IPv6', 'domain', 'hash', 'email'],
   styles: ['./styles/styles.less'],
   onDemandOnly: true,
   block: {
@@ -25,6 +25,26 @@ module.exports = {
     level: 'trace' //trace, debug, info, warn, error, fatal
   },
   options: [
+    {
+      key: 'url',
+      name: 'API Url',
+      description:
+        'The base URL for the Anomali ThreatStream API including the schema (i.e., https://)',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'uiUrl',
+      name: 'UI Url',
+      description:
+        'The base URL for the Anomali ThreatStream UI including the schema (i.e., https://)',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
     {
       key: 'email',
       name: 'Email',

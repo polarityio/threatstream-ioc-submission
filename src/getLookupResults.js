@@ -1,6 +1,6 @@
+const fp = require('lodash/fp');
+
 const { partitionFlatMap, splitOutIgnoredIps } = require('./dataTransformations');
-const getGrapqlQueryData = require('./getGrapqlQueryData/index');
-const getRestQueryData = require('./getRestQueryData');
 const createLookupResults = require('./createLookupResults');
 
 const getLookupResults = (entities, options, requestWithDefaults, Logger) =>
@@ -10,9 +10,25 @@ const getLookupResults = (entities, options, requestWithDefaults, Logger) =>
         _entitiesPartition
       );
 
-      const lookupResults = createLookupResults(options, entitiesPartition);
+      const { body } = await requestWithDefaults({
+        url: `${options.url}/api/v2/intelligence/?username=${options.email}&api_key=${
+          options.apiKey
+        }&value__regexp=${fp.flow(
+          fp.map(fp.get('value')),
+          fp.join('|')
+        )(entitiesPartition)}`,
+        method: 'get'
+      });
+
+      const entitiesThatExistInTS = fp.getOr([], 'objects', body);
       
-      Logger.trace({ lookupResults }, 'Lookup Results');
+      const lookupResults = createLookupResults(
+        options,
+        entitiesPartition,
+        entitiesThatExistInTS
+      );
+      
+      Logger.trace({ body, lookupResults }, 'Lookup Results');
 
       return lookupResults.concat(ignoredIpLookupResults);
     },

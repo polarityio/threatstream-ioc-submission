@@ -3,8 +3,10 @@ const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
 const validateOptions = (options, callback) => {
   const stringOptionsErrorMessages = {
+    url: 'You must provide a valid API URL from your Anomali ThreatStream Account',
+    uiUrl: 'You must provide a valid UI URL from your Anomali ThreatStream Account',
     email: 'You must provide a valid Email from your Anomali ThreatStream Account',
-    password: 'You must provide a valid API Key from your Anomali ThreatStream Account'
+    apiKey: 'You must provide a valid API Key from your Anomali ThreatStream Account'
   };
 
   const stringValidationErrors = _validateStringOptions(
@@ -12,7 +14,9 @@ const validateOptions = (options, callback) => {
     options
   );
 
-  callback(null, stringValidationErrors);
+  const urlValidationError = _validateUrlOption(options.url);
+
+  callback(null, stringValidationErrors.concat(urlValidationError));
 };
 
 const _validateStringOptions = (stringOptionsErrorMessages, options, otherErrors = []) =>
@@ -27,5 +31,13 @@ const _validateStringOptions = (stringOptionsErrorMessages, options, otherErrors
         })
       : agg;
   }, otherErrors)(stringOptionsErrorMessages);
+
+const _validateUrlOption = ({ value: url }, otherErrors = []) =>
+  url && url.endsWith('//')
+    ? otherErrors.concat({
+        key: 'url',
+        message: 'Your Url must not end with a //'
+      })
+    : otherErrors;
 
 module.exports = validateOptions;

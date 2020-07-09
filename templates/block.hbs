@@ -1,0 +1,39 @@
+<div class="titleIcon">{{fa-icon "info-circle" size="sm"}} Found Items</div>
+<div class="note">
+  <span class="p-key"><span class="p-value"><em><b>NOTE:</b></em></span> Deletions of Found Items are perminant.</span>
+</div>
+<table class="intelItemsWrapper">
+  <tbody class="intelItems">
+    {{#each entitiesThatExistInTS as |intel|}}
+      <tr class="intelItem">
+        <td class="intellValue">
+          <a href="{{details.url}}/search?value__re=.*{{intel.value}}.*">{{intel.value}}</a>
+        </td>
+        <td>
+          <span class="delete" {{action "deleteItem" intel.id}}>{{fa-icon "trash" fixedWidth=true}}</span>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<div class="d-flex flex-row justify-content-between align-items-center">
+  <div>
+    {{#if isRunning}}
+      {{fa-icon "spinner-third" fixedWidth=true spin=true}} Running
+    {{/if}}
+  </div>
+
+  {{#if __message}}
+    <div class="alert alert-info mt-1">
+      {{__message}}
+    </div>
+  {{/if}}
+  {{#if __errorMessage}}
+    <div class="alert alert-danger mt-1">
+      {{__errorMessage}}
+    </div>
+  {{/if}}
+</div>
+
+{{!-- severity confidnece and tags status organization --}}

@@ -63,7 +63,8 @@ const createRequestWithDefaults = (Logger) => {
 
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {
     checkForInternalServiceError(statusCode, body);
-    if (Math.round(statusCode / 100) * 100 !== 200) {
+    const roundedStatus = Math.round(statusCode / 100) * 100;
+    if (![200, 300].includes(roundedStatus)) {
       const requestError = Error('Request Error');
       requestError.status = statusCode;
       requestError.description = body;
@@ -72,7 +73,7 @@ const createRequestWithDefaults = (Logger) => {
     }
   };
 
-  return requestWithDefaults(handleAuth);
+  return requestWithDefaults();
 };
 
 module.exports = createRequestWithDefaults;
