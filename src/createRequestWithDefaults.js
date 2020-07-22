@@ -40,16 +40,16 @@ const createRequestWithDefaults = (Logger) => {
 
       let postRequestFunctionResults;
       try {
-        const { body, ...result } = await _requestWithDefault(_requestOptions);
+        const { body: unformattedBody, ...result } = await _requestWithDefault(_requestOptions);
 
-        checkForStatusError(
-          { body: bodyWillBeJSON || defaults.json ? JSON.parse(body) : body, ...result },
-          requestOptions
-        );
+        const body =
+          bodyWillBeJSON || defaults.json ? JSON.parse(unformattedBody) : unformattedBody;
+
+        checkForStatusError({ body, ...result }, requestOptions);
 
         postRequestFunctionResults = await postRequestSuccessFunction({
           ...result,
-          body: bodyWillBeJSON || defaults.json ? JSON.parse(body) : body
+          body
         });
       } catch (error) {
         postRequestFunctionResults = await postRequestFailureFunction(
@@ -64,7 +64,7 @@ const createRequestWithDefaults = (Logger) => {
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {
     checkForInternalServiceError(statusCode, body);
     const roundedStatus = Math.round(statusCode / 100) * 100;
-    if (![200, 300].includes(roundedStatus)) {
+    if (roundedStatus !== 200 && roundedStatus !== 300) {
       const requestError = Error('Request Error');
       requestError.status = statusCode;
       requestError.description = body;

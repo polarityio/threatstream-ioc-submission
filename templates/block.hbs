@@ -1,39 +1,229 @@
-<div class="titleIcon">{{fa-icon "info-circle" size="sm"}} Found Items</div>
-<div class="note">
-  <span class="p-key"><span class="p-value"><em><b>NOTE:</b></em></span> Deletions of Found Items are perminant.</span>
-</div>
-<table class="intelItemsWrapper">
-  <tbody class="intelItems">
-    {{#each entitiesThatExistInTS as |intel|}}
-      <tr class="intelItem">
-        <td class="intellValue">
-          <a href="{{details.url}}/search?value__re=.*{{intel.value}}.*">{{intel.value}}</a>
-        </td>
-        <td>
-          <span class="delete" {{action "deleteItem" intel.id}}>{{fa-icon "trash" fixedWidth=true}}</span>
-        </td>
-      </tr>
-    {{/each}}
-  </tbody>
-</table>
+{{#if entitiesThatExistInTS.length}}
+  <div class="titleIcon">{{fa-icon "info-circle" size="sm"}} Found IOCs</div>
+  <div class="note">
+    <span class="p-key"><span class="p-value"><em><b>NOTE:</b></em></span> Deletions of Found Items are perminant and does not confirm.</span>
+  </div>
+  <table class="intelItemsWrapper">
+    <tbody class="intelItems">
+      {{#each entitiesThatExistInTS as |intel|}}
+        <tr class="intelItem">
+          <td class="intellValue">
+            <a href="{{details.url}}/detail/{{intel.type}}/{{intel.value}}">{{intel.value}}</a>
+          </td>
+          <td>
+            <span>{{intel.type}}</span>
+          </td>
+          <td>
+            <span class="delete" {{action "deleteItem" intel}}>{{fa-icon "trash" fixedWidth=true}}</span>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <div>
+      {{#if deleteIsRunning}}
+        {{fa-icon "spinner-third" fixedWidth=true spin=true}} Deleting...
+      {{/if}}
+    </div>
 
-<div class="d-flex flex-row justify-content-between align-items-center">
-  <div>
-    {{#if isRunning}}
-      {{fa-icon "spinner-third" fixedWidth=true spin=true}} Running
+    {{#if deleteMessage}}
+      <div class="alert alert-info mt-1">
+        {{deleteMessage}}
+      </div>
+    {{/if}}
+    {{#if deleteErrorMessage}}
+      <div class="alert alert-danger mt-1">
+        {{deleteErrorMessage}}
+      </div>
     {{/if}}
   </div>
+{{/if}}
+{{#if notFoundEntities}}
+  <div class="interactiveTable notFoundEntities">
+    <div class="titleIcon">{{fa-icon "info-circle" size="sm"}} New IOCs</div>
+    <table class="intelItemsWrapper">
+      <tbody class="intelItems">
+        {{#each newIocs as |entity|}}
+          <tr class="intelItem">
+            <td class="intellValue">
+              <span>{{entity.value}}</span>
+            </td>
+            <td>
+              <span>{{entity.type}}</span>
+            </td>
+            <td>
+              <span class="add" {{action "addSubmitItem" entity}}>{{fa-icon "plus" fixedWidth=true}}</span>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{#if (not newIocs.length)}}
+    <div class="note">
+      <span class="p-key"><em>NONE</em></span>
+    </div>
+  {{/if}}
+  <div class="interactiveTable notFoundEntities">
+    <div class="titleIcon">{{fa-icon "info-circle" size="sm"}} New IOCs to Submit</div>
+    <table class="intelItemsWrapper">
+      <tbody class="intelItems">
+        {{#each newIocsToSubmit as |entity|}}
+          <tr class="intelItem">
+            <td class="intellValue">
+              <span>{{entity.value}}</span>
+            </td>
+            <td>
+              <span>{{entity.type}}</span>
+            </td>
+            <td>
+              <span class="delete" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{#if (not newIocsToSubmit.length)}}
+      <div class="note">
+        <span class="p-key"><em>NONE</em></span>
+      </div>
+    {{/if}}
+    <div class="inputs">
+      <div class="p-title">{{fa-icon "info-circle" size="sm"}} New IOCs Inputs</div>
+      <div class="checkbox-wrapper">
+        <span class="p-value">
+          {{input
+            class="submit-as-public-checkbox"
+            type="checkbox"
+            checked=isPublic
+            disabled=createIsRunning
+          }}
+        </span>
+        <span class="p-key"> &nbsp;Submit as Public</span>
+      </div>
+      {{!-- <h1 class="p-title">
+          {{fa-icon "tags" fixedWidth=true}} Tags<span class="ml-1">{{#if item.__deletingTag}}{{fa-icon "spinner-third" spin=true fixedWidth=true}}{{/if}}</span>
+      </h1>
+      <div class="tag-container">
+          {{#each (limit item.tags maxTagsInBlock) as |tag tagIndex|}}
+              <a href="{{block.userOptions.uiUrl}}/search?status=active&tags={{tag.name}}" class="tag {{if (eq tag.tlp "red") "tlp-red"}}">
+                  {{tag.name}}
+                  <button class="delete-tag-btn" {{action "deleteTag" item tag.id index tagIndex}} disabled={{item.__deletingTag}}>
+                      {{fa-icon "times" fixedWidth=true}}
+                  </button>
+              </a>
+          {{/each}}
+          {{#if (gt item.additionalTagCount 0)}}
+              <span class="integration-summary-tag integration-border-color">
+                  <span>+{{item.additionalTagCount}}</span>
+              </span>
+          {{/if}}
 
-  {{#if __message}}
-    <div class="alert alert-info mt-1">
-      {{__message}}
+          <div class="edit-tags-btn-container">
+              <span class="p-action" {{action "editTags" index}}>Add Tags {{fa-icon (if editTags "caret-down" "caret-up") fixedWidth=true}}</span>
+          </div>
+
+          {{#if item.__editTags}}
+              <div class="edit-tags-container">
+                  <div class="edit-visibility-container">
+                      {{#power-select
+                              options=tagVisibility
+                              selected=item.__selectedTagVisibility
+                              searchEnabled=false
+                              placeholder="Visibility"
+                              onchange=(action (mut item.__selectedTagVisibility)) as |visibility|}}
+                          {{visibility.name}}
+                      {{/power-select}}
+                  </div>
+                  <div class="input-group add-tag-container">
+                      {{#power-select
+                              triggerClass="form-control"
+                              selected=item.__selectedTag
+                              options=initialTags
+                              searchEnabled=true
+                              search=(action "searchTags")
+                              placeholder="Add Tag"
+                              searchMessage="Loading Tags ..."
+                              searchPlaceholder="Search tags"
+                              closeOnSelect=true
+                              onopen=(action "searchTags" "" item)
+                              onchange=(action (mut item.__selectedTag)) as |tag|}}
+                          {{tag.name}}
+                          {{#if tag.isNew}}
+                              {{fa-icon "plus-circle" fixedWidth=true}}
+                          {{/if}}
+                          {{#if tag.isPreferred}}
+                              {{fa-icon "check-circle" fixedWidth=true}}
+                          {{/if}}
+                      {{/power-select}}
+
+                      <div class="input-group-append">
+                          <button class="btn btn-outline-secondary" disabled={{or item.__addingTag (not item.__selectedTag)}} type="button" {{action "addTag" item index}}>
+                              {{#if item.__addingTag}}
+                                  {{fa-icon "spinner-third" spin=true fixedWidth=true}}
+                              {{else}}
+                                  {{fa-icon "plus" fixedWidth=true}}
+                              {{/if}}
+                          </button>
+                      </div>
+                  </div>
+                  <div class="p-footnote mt-1">(Enter '*' to see all preferred tags)</div>
+              </div>
+          {{/if}}
+          {{#if errorMessage}}
+              <div class="error-box">{{fa-icon "exclamation-triangle" fixedWidth=true}}  {{errorMessage}}</div>
+          {{/if}}
+      </div> 
+      --}}
+      <div style="clear:both; margin-bottom: 5px;"></div>
+
+      <div class="selectContainer">
+        <span class="p-value">Severity: </span>
+
+        <select class="w-100 selectThreatType" size=5 onchange={{action (mut submitSeverity) value="target.value"}}>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="very-high">Very High</option>
+        </select>
+      </div>
+      <div class="selectThreatContainer">
+        <span class="p-value">Threat Type: </span>
+
+        <select class="w-100 selectThreatType" size=5 onchange={{action (mut submitThreatType) value="target.value"}}>
+          {{#each threatTypes as |threatType|}}
+            <option value="{{threatType.type}}">{{threatType.name}}</option>
+          {{/each}}
+        </select>
+      </div>
     </div>
-  {{/if}}
-  {{#if __errorMessage}}
-    <div class="alert alert-danger mt-1">
-      {{__errorMessage}}
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      <div class="submitButton">
+        <div>
+          {{#if createIsRunning}}
+            {{fa-icon "spinner-third" fixedWidth=true spin=true}} Running
+          {{/if}}
+        </div>
+        <button {{action "submitItems"}}
+                disabled={{createIsRunning}}
+                class="p-btn btn btn-secondary mt-1">Submit IOCs
+        </button>
+      </div>
+
+      {{#if createMessage}}
+        <div class="alert alert-info mt-1">
+          {{createMessage}}
+        </div>
+      {{/if}}
+      {{#if createErrorMessage}}
+        <div class="alert alert-danger mt-1">
+          {{createErrorMessage}}
+        </div>
+      {{/if}}
     </div>
-  {{/if}}
-</div>
+  </div>
+{{/if}}
 
 {{!-- severity confidnece and tags status organization --}}

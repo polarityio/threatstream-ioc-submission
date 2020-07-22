@@ -2,7 +2,7 @@ module.exports = {
   name: 'Anomali ThreatStream IOC Submission',
   acronym: 'TSI',
   description: 'TS',
-  entityTypes: ['IPv4', 'IPv6', 'domain', 'hash', 'email'],
+  entityTypes: ['IPv4', 'IPv6', 'email', 'md5', 'sha1', 'sha256', 'domain', 'url'],
   styles: ['./styles/styles.less'],
   onDemandOnly: true,
   block: {
