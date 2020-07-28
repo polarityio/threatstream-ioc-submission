@@ -102,9 +102,15 @@ const submitItems = async (
     newIocsToSubmit,
     previousEntitiesInTS,
     submitTags,
+    isAnonymous,
+    TLP,
     submitPublic,
     submitSeverity,
-    submitThreatType
+    manuallySetConfidence,
+    submitConfidence,
+    submitThreatType,
+    orgTags,
+    selectedTagVisibility
   },
   options,
   Logger,
@@ -121,18 +127,27 @@ const submitItems = async (
               entity
             },
             formData: {
-              tags: JSON.stringify(submitTags),
-              classification: submitPublic ? 'public' : 'private',
-              threat_type: submitThreatType,
-              severity: submitSeverity,
-              confidence: (21).toString(),
               datatext: entity.value,
-              is_anonymous: 'false',
+              classification: submitPublic ? 'public' : 'private',
+              is_anonymous: JSON.stringify(isAnonymous),
+              ...(manuallySetConfidence && { source_confidence_weight: '100' }),
+              confidence: JSON.stringify(submitConfidence),
+              tlp: TLP,
+              severity: submitSeverity,
+              threat_type: submitThreatType,
+              tags: JSON.stringify(
+                fp.map(
+                  (tag) => ({
+                    name: tag.name,
+                    tlp: selectedTagVisibility.value
+                  }),
+                  submitTags
+                )
+              ),
               expiration_ts: 'null',
               default_state: 'active',
               reject_benign: 'false',
               benign_is_public: 'false',
-              tlp: 'green',
               intelligence_source: 'Polarity'
             }
           }),
@@ -148,35 +163,46 @@ const submitItems = async (
       fp.groupBy('success')
     )(creationResults);
 
+    const newTags = fp.filter((submitTag) => fp.includes(submitTag.name, orgTags), submitTags);
+
     return callback(null, {
       entitiesThatExistInTS: [...newEntities, ...previousEntitiesInTS],
-      uncreatedEntities
+      uncreatedEntities,
+      orgTags: orgTags.concat(newTags)
     });
   } catch (error) {
-    Logger.trace({ test: 'ERRROR????', error });
-    return callback({ err: error, detail: 'Failed to Create Entities' }, {});
+    Logger.trace(
+      { detail: 'Failed to Create IOC in Anomali ThreatStream', error },
+      'IOC Creation Failed'
+    );
+    return callback({
+      err: error,
+      detail: 'Failed to Create IOC in Anomali ThreatStream'
+    });
   }
 };
 
-const searchTags = async () => {
-  // try {
-  //   //input searchTerm, exclude
-  //   //getPreferredTags
-  //   let requestOptions = {
-  //     uri: `${options.apiUrl}/api/v1/orgtag/`,
-  //     qs: {
-  //       username: options.username,
-  //       api_key: options.apikey,
-  //       limit: 500
-  //     }
-  //   };
-
-  //   Logger.debug({ tags }, 'SEARCH_TAGS result');
-  //   cb(null, { tags });
-  // } catch (err) {
-  //   cb(err);
-  // }
-  callback(null, {});
+const searchTags = async (options) => {
+  caches.set(`${options.email}${options.apiKey}needToSearchTagsAgain`, false);
+  try {
+    if (needToSearchTagsAgain) {
+      
+      caches.set(`${options.email}${options.apiKey}needToSearchTagsAgain`, false);
+      caches.set(`${options.email}${options.apiKey}tags`, orgTags);
+    }
+    callback(null, {
+      orgTags: caches.get(`${options.email}${options.apiKey}tags`)
+    });
+  } catch (error) {
+    Logger.trace(
+      { detail: 'Failed to Get Tags from Anomali ThreatStream', error },
+      'Get Tags Failed'
+    );
+    return callback({
+      err: error,
+      detail: 'Failed to Get Tags from Anomali ThreatStream'
+    });
+  }
 };
 
 module.exports = {

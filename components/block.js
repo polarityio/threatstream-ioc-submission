@@ -3,10 +3,14 @@ polarity.export = PolarityComponent.extend({
   entitiesThatExistInTS: Ember.computed.alias('details.entitiesThatExistInTS'),
   notFoundEntities: Ember.computed.alias('details.notFoundEntities'),
   threatTypes: Ember.computed.alias('details.threatTypes'),
+  orgTags: Ember.computed.alias('details.orgTags'),
+  existingTags: [],
   isPublic: false,
+  isAnonymous: false,
+  manuallySetConfidence: false,
   newIocs: [],
   newIocsToSubmit: [],
-  initialTags: ['Polarity'],
+  selectedTags: [{ name: 'Polarity' }],
   tagsErrorMessage: '',
   maxTagsInBlock: 10,
   deleteMessage: '',
@@ -17,41 +21,20 @@ polarity.export = PolarityComponent.extend({
   createIsRunning: '',
   submitThreatType: '',
   submitSeverity: '',
-
-  // _searchTags: function (term, resolve, reject) {
-  //   let self = this;
-
-  //   this.sendIntegrationMessage({
-  //     action: 'searchTags',
-  //     term: term,
-  //     exclude: []
-  //   })
-  //     .then((result) => {
-  //       console.info(result);
-  //       let tagMap = new Map();
-
-  //       result.tags.forEach((tag) => {
-  //         let tagNameLower = tag.name.toLowerCase();
-  //         if (tagMap.has(tagNameLower)) {
-  //           if (tag.isPreferred) {
-  //             tagMap.set(tagNameLower, tag);
-  //           }
-  //         } else {
-  //           tagMap.set(tagNameLower, tag);
-  //         }
-  //       });
-
-  //       let dedupedTags = [...tagMap.values()];
-  //       self.set('initialTags', dedupedTags);
-
-  //       resolve(dedupedTags);
-  //     })
-  //     .catch((err) => {
-  //       self._displayError(err);
-  //       reject(err);
-  //     });
-  // },
+  submitConfidence: 50,
+  TLP: '',
+  selectedTag: '',
+  editingTags: false,
+  tagVisibility: [
+    { name: 'Anomali Community', value: 'white' },
+    { name: 'My Organization', value: 'red' }
+  ],
+  selectedTagVisibility: { name: 'My Organization', value: 'red' },
   init() {
+    this.set(
+      'existingTags',
+      this.get('orgTags').map((orgTag) => ({ name: orgTag }))
+    );
     this.set('newIocs', this.get('notFoundEntities').slice(1));
     this.set('newIocsToSubmit', this.get('notFoundEntities').slice(0, 1));
     this._super(...arguments);
@@ -152,14 +135,23 @@ polarity.export = PolarityComponent.extend({
             action: 'submitItems',
             newIocsToSubmit: outerThis.get('newIocsToSubmit'),
             previousEntitiesInTS: outerThis.get('entitiesThatExistInTS'),
-            submitTags: [],
             submitPublic: outerThis.get('isPublic'),
+            isAnonymous: outerThis.get('isAnonymous'),
+            submitConfidence: outerThis.get('submitConfidence'),
+            manuallySetConfidence: outerThis.get('manuallySetConfidence'),
+            TLP: outerThis.get('TLP'),
             submitSeverity: outerThis.get('submitSeverity'),
-            submitThreatType: outerThis.get('submitThreatType')
+            submitThreatType: outerThis.get('submitThreatType'),
+            submitTags: outerThis
+              .get('selectedTags')
+              .map((selectedTag) => selectedTag.name),
+            orgTags: outerThis.get('orgTags'),
+            selectedTagVisibility: outerThis.get('selectedTagVisibility')
           }
         })
-        .then(({ entitiesThatExistInTS }) => {
+        .then(({ entitiesThatExistInTS, orgTags }) => {
           outerThis.set('entitiesThatExistInTS', entitiesThatExistInTS);
+          outerThis.set('orgTags', orgTags);
           outerThis.set('newIocsToSubmit', []);
           outerThis.set('createMessage', 'Successfully Created IOCs');
         })
@@ -179,90 +171,43 @@ polarity.export = PolarityComponent.extend({
             outerThis.get('block').notifyPropertyChange('data');
           }, 3000);
         });
+    },
+    editTags: function () {
+      this.toggleProperty(`editingTags`);
+      this.get('block').notifyPropertyChange('data');
+    },
+    deleteTag: function (tagToDelete) {
+      this.set(
+        'selectedTags',
+        this.get('selectedTags').filter((selectedTag) => selectedTag !== tagToDelete)
+      );
+    },
+    searchTags: function (term) {
+      const outerThis = this;
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        if (term) {
+          const tags = outerThis
+            .get('orgTags')
+            .filter((orgTag) => orgTag.toLowerCase().includes(term.toLowerCase()))
+            .map((orgTag) => ({ name: orgTag }));
+
+          resolve([{ name: term, isNew: true }].concat(tags));
+        } else {
+          resolve(outerThis.get('existingTags'));
+        }
+      });
+    },
+    addTag: function () {
+      const selectedTag = this.get('selectedTag');
+      const selectedTags = this.get('selectedTags');
+
+      let isDuplicate = selectedTags.find(
+        (tag) => tag.name.toLowerCase() === selectedTag.name.toLowerCase()
+      );
+
+      if (!isDuplicate) {
+        this.set('selectedTags', selectedTags.concat(selectedTag));
+      }
     }
-    // editTags: function (index) {
-    //   this.toggleProperty(`__editTags`);
-    //   this.get('block').notifyPropertyChange('data');
-    // },
-    // searchTags: function (term) {
-    //   return new Ember.RSVP.Promise((resolve, reject) => {
-    //     Ember.run.debounce(this, this._searchTags, term, resolve, reject, 600);
-    //   });
-    // },
-    // addTag: function (observable, observableIndex) {
-    //   let self = this;
-
-    //   self.set(`intelligence.${observableIndex}.__addingTag`, true);
-    //   self.get('block').notifyPropertyChange('data');
-
-    //   // The payload can contain any properties as long as you send a javascript object literal (POJO)
-    //   let payload = {
-    //     action: 'ADD_TAG',
-    //     observableId: observable.id,
-    //     tag: observable.__selectedTag.name,
-    //     tlp: observable.__selectedTagVisibility.value
-    //   };
-
-    //   // This is a utility method that will send the payload to the server where it will trigger the integration's `onMessage` method
-    //   this.sendIntegrationMessage(payload)
-    //     .then(function (result) {
-    //       // We set the message property to the result of response.reply
-    //       observable.__selectedTag = '';
-    //       let tags = observable.tags;
-    //       if (!Array.isArray(tags)) {
-    //         tags = [];
-    //       }
-
-    //       let isDuplicate = tags.find((tag) => {
-    //         return tag.name.toLowerCase() === result.tags[0].name.toLowerCase();
-    //       });
-
-    //       if (!isDuplicate) {
-    //         tags.push(result.tags[0]);
-    //       }
-
-    //       self.set('intelligence.' + observableIndex + '.tags', tags);
-    //       self.set('actionMessage', JSON.stringify(result, null, 4));
-    //     })
-    //     .catch(function (err) {
-    //       self._displayError(err);
-    //     })
-    //     .finally(() => {
-    //       self.set(`intelligence.${observableIndex}.__addingTag`, false);
-    //       self.get('block').notifyPropertyChange('data');
-    //     });
-    // },
-    // deleteTag: function (observable, tagId, observableIndex) {
-    //   let self = this;
-
-    //   this.set(`intelligence.${observableIndex}.__deletingTag`, true);
-    //   this.get('block').notifyPropertyChange('data');
-
-    //   // The payload can contain any properties as long as you send a javascript object literal (POJO)
-    //   let payload = {
-    //     action: 'DELETE_TAG',
-    //     observableId: observable.id,
-    //     tagId: tagId
-    //   };
-
-    //   // This is a utility method that will send the payload to the server where it will trigger the integration's `onMessage` method
-    //   this.sendIntegrationMessage(payload)
-    //     .then(function (result) {
-    //       // We set the message property to the result of response.reply
-    //       let updatedTags = observable.tags.filter((tag) => {
-    //         return tag.id !== tagId;
-    //       });
-    //       self.set('intelligence.' + observableIndex + '.tags', updatedTags);
-
-    //       self.set('actionMessage', JSON.stringify(result, null, 4));
-    //     })
-    //     .catch((err) => {
-    //       self._displayError(err);
-    //     })
-    //     .finally(() => {
-    //       self.set(`intelligence.${observableIndex}.__deletingTag`, false);
-    //       self.get('block').notifyPropertyChange('data');
-    //     });
-    // }
   }
 });

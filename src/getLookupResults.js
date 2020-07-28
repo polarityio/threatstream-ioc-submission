@@ -14,25 +14,40 @@ const getLookupResults = (
       const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(
         _entitiesPartition
       );
-      const entitiesThatExistInTS = await partitionFlatMap(
-        async (entities) => {
-          const result = await requestWithDefaults({
-            url: `${options.url}/api/v2/intelligence/?username=${options.email}&api_key=${
-              options.apiKey
-            }&value__regexp=${fp.flow(fp.map(fp.get('value')), fp.join('|'))(entities)}`,
-            method: 'get'
-          });
 
-          return fp.getOr([], 'body.objects', result);
-        },
+      const entitiesThatExistInTS = await partitionFlatMap(
+        async (entities) =>
+          fp.getOr(
+            [],
+            'body.objects',
+            await requestWithDefaults({
+              url: `${options.url}/api/v2/intelligence/?username=${
+                options.email
+              }&api_key=${options.apiKey}&value__regexp=${fp.flow(
+                fp.map(fp.get('value')),
+                fp.join('|')
+              )(entities)}`,
+              method: 'get'
+            })
+          ),
         5,
         entitiesPartition
+      );
+
+      const orgTags = fp.flow(
+        fp.getOr([], 'body.objects'),
+        fp.map(fp.get('name'))
+      )(
+        await requestWithDefaults({
+          uri: `${options.url}/api/v1/orgtag/?username=${options.email}&api_key=${options.apiKey}`
+        })
       );
 
       const lookupResults = createLookupResults(
         options,
         entitiesPartition,
-        entitiesThatExistInTS
+        entitiesThatExistInTS,
+        orgTags
       );
 
       Logger.trace({ lookupResults, entitiesThatExistInTS }, 'Lookup Results');

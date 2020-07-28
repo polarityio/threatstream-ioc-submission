@@ -95,7 +95,7 @@
       <div class="checkbox-wrapper">
         <span class="p-value">
           {{input
-            class="submit-as-public-checkbox"
+            class="submit-checkbox"
             type="checkbox"
             checked=isPublic
             disabled=createIsRunning
@@ -103,82 +103,58 @@
         </span>
         <span class="p-key"> &nbsp;Submit as Public</span>
       </div>
-      {{!-- <h1 class="p-title">
-          {{fa-icon "tags" fixedWidth=true}} Tags<span class="ml-1">{{#if item.__deletingTag}}{{fa-icon "spinner-third" spin=true fixedWidth=true}}{{/if}}</span>
-      </h1>
-      <div class="tag-container">
-          {{#each (limit item.tags maxTagsInBlock) as |tag tagIndex|}}
-              <a href="{{block.userOptions.uiUrl}}/search?status=active&tags={{tag.name}}" class="tag {{if (eq tag.tlp "red") "tlp-red"}}">
-                  {{tag.name}}
-                  <button class="delete-tag-btn" {{action "deleteTag" item tag.id index tagIndex}} disabled={{item.__deletingTag}}>
-                      {{fa-icon "times" fixedWidth=true}}
-                  </button>
-              </a>
-          {{/each}}
-          {{#if (gt item.additionalTagCount 0)}}
-              <span class="integration-summary-tag integration-border-color">
-                  <span>+{{item.additionalTagCount}}</span>
-              </span>
-          {{/if}}
-
-          <div class="edit-tags-btn-container">
-              <span class="p-action" {{action "editTags" index}}>Add Tags {{fa-icon (if editTags "caret-down" "caret-up") fixedWidth=true}}</span>
+      <div class="checkbox-wrapper">
+        <span class="p-value">
+          {{input
+            class="submit-checkbox"
+            type="checkbox"
+            checked=isAnonymous
+            disabled=createIsRunning
+          }}
+        </span>
+        <span class="p-key"> &nbsp;Is Anonymous</span>
+      </div>
+      <div class="checkbox-wrapper">
+        <span class="p-value">
+          {{input
+            class="submit-checkbox"
+            type="checkbox"
+            checked=manuallySetConfidence
+            disabled=createIsRunning
+          }}
+        </span>
+        <span class="p-key"> &nbsp;Manually Set Confidence</span>
+      </div>
+      {{#if manuallySetConfidence}}
+        <div class="confidence">
+          <span class="p-value">Confidence: </span>
+          <span class="p-key">{{submitConfidence}}</span>
+          <div>
+            <input 
+              type="range"
+              class="confidenceRange"
+              oninput={{action (mut submitConfidence) value="target.value"}}
+              min="0"
+              max="100"
+              value={{submitConfidence}}
+              steps="1"
+            />
           </div>
+        </div>
+      {{/if}}
 
-          {{#if item.__editTags}}
-              <div class="edit-tags-container">
-                  <div class="edit-visibility-container">
-                      {{#power-select
-                              options=tagVisibility
-                              selected=item.__selectedTagVisibility
-                              searchEnabled=false
-                              placeholder="Visibility"
-                              onchange=(action (mut item.__selectedTagVisibility)) as |visibility|}}
-                          {{visibility.name}}
-                      {{/power-select}}
-                  </div>
-                  <div class="input-group add-tag-container">
-                      {{#power-select
-                              triggerClass="form-control"
-                              selected=item.__selectedTag
-                              options=initialTags
-                              searchEnabled=true
-                              search=(action "searchTags")
-                              placeholder="Add Tag"
-                              searchMessage="Loading Tags ..."
-                              searchPlaceholder="Search tags"
-                              closeOnSelect=true
-                              onopen=(action "searchTags" "" item)
-                              onchange=(action (mut item.__selectedTag)) as |tag|}}
-                          {{tag.name}}
-                          {{#if tag.isNew}}
-                              {{fa-icon "plus-circle" fixedWidth=true}}
-                          {{/if}}
-                          {{#if tag.isPreferred}}
-                              {{fa-icon "check-circle" fixedWidth=true}}
-                          {{/if}}
-                      {{/power-select}}
-
-                      <div class="input-group-append">
-                          <button class="btn btn-outline-secondary" disabled={{or item.__addingTag (not item.__selectedTag)}} type="button" {{action "addTag" item index}}>
-                              {{#if item.__addingTag}}
-                                  {{fa-icon "spinner-third" spin=true fixedWidth=true}}
-                              {{else}}
-                                  {{fa-icon "plus" fixedWidth=true}}
-                              {{/if}}
-                          </button>
-                      </div>
-                  </div>
-                  <div class="p-footnote mt-1">(Enter '*' to see all preferred tags)</div>
-              </div>
-          {{/if}}
-          {{#if errorMessage}}
-              <div class="error-box">{{fa-icon "exclamation-triangle" fixedWidth=true}}  {{errorMessage}}</div>
-          {{/if}}
-      </div> 
-      --}}
       <div style="clear:both; margin-bottom: 5px;"></div>
 
+      <div class="selectContainer">
+        <span class="p-value">TLP: </span>
+
+        <select class="w-100 selectThreatType" size=5 onchange={{action (mut TLP) value="target.value"}}>
+            <option value="red">Red</option>
+            <option value="amber">Amber</option>
+            <option value="green">Green</option>
+            <option value="white">White</option>
+        </select>
+      </div>
       <div class="selectContainer">
         <span class="p-value">Severity: </span>
 
@@ -189,7 +165,7 @@
             <option value="very-high">Very High</option>
         </select>
       </div>
-      <div class="selectThreatContainer">
+      <div class="selectContainer">
         <span class="p-value">Threat Type: </span>
 
         <select class="w-100 selectThreatType" size=5 onchange={{action (mut submitThreatType) value="target.value"}}>
@@ -197,6 +173,67 @@
             <option value="{{threatType.type}}">{{threatType.name}}</option>
           {{/each}}
         </select>
+      </div>
+
+      <div class="tag-container">
+        <h1 class="p-title">
+          {{fa-icon "tags" fixedWidth=true}} Tags
+        </h1>
+        {{#each (limit selectedTags maxTagsInBlock) as |tag tagIndex|}}
+          <a href="{{details.url}}/search?status=active&tags={{tag}}" class="tag">
+            {{tag.name}}
+            <button class="tag-btn delete-tag-btn" {{action "deleteTag" tag}}>
+              {{fa-icon "times" fixedWidth=true}}
+            </button>
+          </a>
+        {{/each}}
+
+        <div class="edit-tags-btn-container">
+          <span class="p-action" {{action "editTags"}}>Add Tags {{fa-icon (if editingTags "caret-up" "caret-down") fixedWidth=true}}</span>
+        </div>
+
+        {{#if editingTags}}
+          <div class="edit-tags-container">
+            <div class="edit-visibility-container">
+              {{#power-select
+                options=tagVisibility
+                selected=selectedTagVisibility
+                searchEnabled=false
+                placeholder="Visibility"
+                onChange=(action (mut selectedTagVisibility)) as |visibility|}}
+                {{visibility.name}}
+              {{/power-select}}
+            </div>
+            <div class="input-group add-tag-container">
+              {{#power-select
+                triggerClass="form-control"
+                selected=selectedTag
+                options=existingTags
+                searchEnabled=true
+                search=(action "searchTags")
+                placeholder="Add Tag"
+                searchMessage="Loading Tags ..."
+                searchPlaceholder="Search tags"
+                closeOnSelect=true
+                onOpen=(action "searchTags" '')
+                onChange=(action (mut selectedTag)) as |tag|
+              }}
+                {{tag.name}}
+                {{#if tag.isNew}}
+                    {{fa-icon "plus-circle" fixedWidth=true}}
+                {{else}}
+                    {{fa-icon "check-circle" fixedWidth=true}}
+                {{/if}}
+              {{/power-select}}
+
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" {{action "addTag"}}>
+                  {{fa-icon "plus" fixedWidth=true}}
+                </button>
+              </div>
+            </div>
+          </div>
+        {{/if}}
       </div>
     </div>
     <div class="d-flex flex-row justify-content-between align-items-center">

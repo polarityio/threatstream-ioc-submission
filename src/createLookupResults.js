@@ -1,7 +1,7 @@
 const fp = require('lodash/fp');
 const { THREAT_TYPES } = require('./constants');
 
-const createLookupResults = (options, entities, _entitiesThatExistInTS) => {
+const createLookupResults = (options, entities, _entitiesThatExistInTS, orgTags) => {
   const entitiesThatExistInTS = fp.filter(
     ({ value }) =>
       fp.any(({ value: _value }) => fp.toLower(value) === fp.toLower(_value), entities),
@@ -23,6 +23,7 @@ const createLookupResults = (options, entities, _entitiesThatExistInTS) => {
           url: options.uiUrl,
           entitiesThatExistInTS,
           notFoundEntities,
+          orgTags,
           threatTypes: getThreatTypes(entities)
         }
       }
