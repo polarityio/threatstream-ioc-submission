@@ -14,10 +14,8 @@ const createLookupResults = (options, entities, _entitiesThatExistInTS, orgTags)
       isVolatile: true,
       data: {
         summary: [
-          ...(entitiesThatExistInTS.length
-            ? [`Entities Found (${entitiesThatExistInTS.length})`]
-            : []),
-          ...(notFoundEntities.length ? [`New Entites (${notFoundEntities.length})`] : [])
+          ...(entitiesThatExistInTS.length ? ['Entities Found'] : []),
+          ...(notFoundEntities.length ? ['New Entites'] : [])
         ],
         details: {
           url: options.uiUrl,
@@ -32,9 +30,18 @@ const createLookupResults = (options, entities, _entitiesThatExistInTS, orgTags)
 };
 
 const getNotFoundEntities = (entitiesThatExistInTS, entities) =>
-  fp.filter(
-    ({ value }) =>
-      !fp.any(({ value: _value }) => value === _value, entitiesThatExistInTS),
+  fp.reduce(
+    (agg, entity) =>
+      !fp.any(
+        ({ value }) => fp.lowerCase(entity.value) === fp.lowerCase(value),
+        entitiesThatExistInTS
+      )
+        ? agg.concat({
+            ...entity,
+            type: fp.includes('IP', entity.type) ? 'ip' : entity.type
+          })
+        : agg,
+    [],
     entities
   );
 

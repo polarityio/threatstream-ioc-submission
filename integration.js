@@ -74,7 +74,6 @@ const deleteItem = async (
 
     _intelId = fp.get('body.objects.0.id', result);
     if (!_intelId)
-      //Possibly return error saying to wait as anomali is still processing IOC creation
       return callback(null, {
         newList: fp.filter(({ value }) => value !== entity.value, intelObjects),
         newIocs: [entity, ...newIocs]
@@ -131,14 +130,14 @@ const submitItems = async (
               classification: submitPublic ? 'public' : 'private',
               is_anonymous: JSON.stringify(isAnonymous),
               ...(manuallySetConfidence && { source_confidence_weight: '100' }),
-              confidence: JSON.stringify(submitConfidence),
+              confidence: submitConfidence,
               tlp: TLP,
               severity: submitSeverity,
               threat_type: submitThreatType,
               tags: JSON.stringify(
                 fp.map(
-                  (tag) => ({
-                    name: tag.name,
+                  (name) => ({
+                    name,
                     tlp: selectedTagVisibility.value
                   }),
                   submitTags
@@ -163,7 +162,10 @@ const submitItems = async (
       fp.groupBy('success')
     )(creationResults);
 
-    const newTags = fp.filter((submitTag) => fp.includes(submitTag.name, orgTags), submitTags);
+    const newTags = fp.filter(
+      (submitTag) => fp.includes(submitTag.name, orgTags),
+      submitTags
+    );
 
     return callback(null, {
       entitiesThatExistInTS: [...newEntities, ...previousEntitiesInTS],
