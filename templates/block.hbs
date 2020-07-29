@@ -199,6 +199,7 @@
                 options=tagVisibility
                 selected=selectedTagVisibility
                 searchEnabled=false
+                searchField="name"
                 placeholder="Visibility"
                 onChange=(action (mut selectedTagVisibility)) as |visibility|}}
                 {{visibility.name}}
@@ -212,6 +213,7 @@
                 searchEnabled=true
                 search=(action "searchTags")
                 placeholder="Add Tag"
+                searchField="name"
                 searchMessage="Loading Tags ..."
                 searchPlaceholder="Search tags"
                 closeOnSelect=true

@@ -1,7 +1,8 @@
 module.exports = {
   name: 'Anomali ThreatStream IOC Submission',
   acronym: 'TSI',
-  description: 'Polarity\'s ThreatStream integration IOC Submission gives users access bulk IOC submission to the Anomali\'s ThreatStream platform.',
+  description:
+    "Polarity's ThreatStream integration IOC Submission gives users access bulk IOC submission to the Anomali's ThreatStream platform.",
   entityTypes: ['IPv4', 'IPv6', 'email', 'md5', 'sha1', 'sha256', 'domain', 'url'],
   styles: ['./styles/styles.less'],
   onDemandOnly: true,
