@@ -25,7 +25,7 @@ const THREAT_TYPES = {
   domain: [
     { type: 'adware', name: 'Adware' },
     { type: 'anonymization', name: 'Anonymization' },
-    { type: 'apt', name: 'APT' },
+    { type: 'apt', name: 'Actor' },
     { type: 'c2', name: 'C2' },
     { type: 'compromised', name: 'Compromised' },
     { type: 'exfil', name: 'Exfil' },
@@ -39,7 +39,7 @@ const THREAT_TYPES = {
     { type: 'suspicious', name: 'Suspicious' }
   ],
   email: [
-    { type: 'apt', name: 'APT' },
+    { type: 'apt', name: 'Actor' },
     { type: 'compromised', name: 'Compromised' },
     { type: 'informational', name: 'Informational' },
     { type: 'malware', name: 'Malware' },
@@ -49,7 +49,7 @@ const THREAT_TYPES = {
   ],
   url: [
     { type: 'anomalous', name: 'Anomalous' },
-    { type: 'apt', name: 'APT' },
+    { type: 'apt', name: 'Actor' },
     { type: 'c2', name: 'C2' },
     { type: 'compromised', name: 'Compromised' },
     { type: 'crypto', name: 'Crypto' },
@@ -64,13 +64,13 @@ const THREAT_TYPES = {
     { type: 'suspicious', name: 'Suspicious' }
   ],
   hash: [
-    { type: 'apt', name: 'APT' },
+    { type: 'apt', name: 'Actor' },
     { type: 'crypto', name: 'Crypto' },
     { type: 'malware', name: 'Malware' }
   ],
   IPv6: [
     { type: 'anonymization', name: 'Anonymization' },
-    { type: 'apt', name: 'APT' }
+    { type: 'apt', name: 'Actor' }
   ]
 };
 
