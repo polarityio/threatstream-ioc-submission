@@ -25,7 +25,7 @@ The Email associated with your Anomali ThreatStream account.
 
 ### API Key
 
-The your API Key for Anomali ThreatStream.
+The API Key for Anomali ThreatStream.
 
 
 ## Polarity

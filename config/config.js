@@ -58,7 +58,7 @@ module.exports = {
     {
       key: 'apiKey',
       name: 'API Key',
-      description: 'The your API Key for Anomali ThreatStream.',
+      description: 'The API Key for Anomali ThreatStream.',
       default: '',
       type: 'password',
       userCanEdit: true,
