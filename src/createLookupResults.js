@@ -10,7 +10,7 @@ const createLookupResults = (options, entities, _entitiesThatExistInTS, orgTags)
   const notFoundEntities = getNotFoundEntities(entitiesThatExistInTS, entities);
   return [
     {
-      entity: { ...entities[0], value: 'Anomali ThreatStream IOC Submission' },
+      entity: { ...entities[0], value: 'ThreatStream IOC Submission' },
       isVolatile: true,
       data: {
         summary: [
