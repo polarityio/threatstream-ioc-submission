@@ -2,29 +2,52 @@
   <h1 class="p-title">
     {{fa-icon "info-circle" size="sm"}} Found IOCs
   </h1>
-  <div class="note">
-    <span class="p-key">
-      <span class="p-value"><em><b>DANGER:</b></em></span> Deleting an indicator cannot be undone.
-    </span>
-  </div>
+  {{#if interactionDisabled}}
+    <div class="ioc-deletion-modal">
+      <div class="note">
+        <span class="p-key">
+          <span class="p-value"><em><b>DANGER:</b></em></span>
+          <div>
+            <span>Deleting an indicator cannot be undone and will remove all data for the IOC in Anomali ThreatStream.</span>
+          </div>
+          <div>
+            <span>Are you sure you want to delete all content relating to <em><b>{{entityToDelete.value}}</b></em>?</span>
+          </div>
+        </span>
+        <div class="delete-confirmation-button">
+          <button class="cancel-delete" {{action "cancelItemDeletion"}}>Cancel</button>
+          <button class="p-btn btn btn-secondary m-0" {{action "confirmDelete"}}>Confirm</button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
   <table class="w-100">
     <tbody>
       {{#each entitiesThatExistInTS as |intel|}}
         <tr>
           <td>
-            <a href="{{details.url}}/detail/{{intel.type}}/{{intel.value}}">{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+            <a href={{if (not interactionDisabled) "{{details.url}}/detail/{{intel.type}}/{{intel.value}}"}}>{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
           </td>
           <td class="type">
             <span>{{intel.type}}</span>
           </td>
-          <td class="icon">
-            <span class="delete" {{action "deleteItem" intel}}>{{fa-icon "trash" fixedWidth=true}}</span>
-          </td>
+          {{#if block.userOptions.allowDelete}}
+            <td class="icon">
+              <button
+                class="no-style-button delete"
+                {{action "initiateItemDeletion" intel}}
+                title="Delete IOC from ThreatStream"
+                disabled={{interactionDisabled}}
+              >
+                {{fa-icon "trash" fixedWidth=true}}
+              </button>
+            </td>
+          {{/if}}
         </tr>
       {{/each}}
     </tbody>
   </table>
-  <hr class="mt-2 mb-0">
+  
   <div class="d-flex flex-row justify-content-between align-items-center">
     <div>
       {{#if deleteIsRunning}}
@@ -44,6 +67,7 @@
     {{/if}}
   </div>
 {{/if}}
+
 {{#if notFoundEntities}}
     <h1 class="p-title">
       {{fa-icon "sparkles" size="sm" fixedWidth=true}} New IOCs
@@ -59,7 +83,14 @@
               <span>{{entity.type}}</span>
             </td>
             <td class="icon">
-              <span class="add" {{action "addSubmitItem" entity}} title="Add IOC to submission list">{{fa-icon "plus" fixedWidth=true}}</span>
+              <button
+                class="no-style-button add"
+                {{action "addSubmitItem" entity}}
+                title="Add IOC to submission list"
+                disabled={{interactionDisabled}}
+              >
+                {{fa-icon "plus" fixedWidth=true}}
+              </button>
             </td>
           </tr>
         {{/each}}
@@ -85,7 +116,14 @@
             <span>{{entity.type}}</span>
           </td>
           <td class="icon">
-            <span class="remove" title="Remove IOC from submission list" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
+            <button
+              class="no-style-button remove"
+              title="Remove IOC from submission list"
+              {{action "removeSubmitItem" entity}} 
+              disabled={{interactionDisabled}}
+            >
+              {{fa-icon "minus" fixedWidth=true}}
+            </button>
           </td>
         </tr>
       {{/each}}
@@ -104,7 +142,7 @@
         {{input
           type="checkbox"
           checked=isPublic
-          disabled=createIsRunning
+          disabled=interactionDisabled
         }}
         <span class="align-top">Submit as Public</span>
       </label>
@@ -114,7 +152,7 @@
         {{input
           type="checkbox"
           checked=isAnonymous
-          disabled=createIsRunning
+          disabled=interactionDisabled
         }}
         <span class="align-top">Is Anonymous</span>
       </label>
@@ -124,7 +162,7 @@
         {{input
           type="checkbox"
           checked=manuallySetConfidence
-          disabled=createIsRunning
+          disabled=interactionDisabled
         }}
         <span class="align-top">Manually Set Confidence</span>
       </label>
@@ -140,6 +178,7 @@
             oninput={{action (mut submitConfidence) value="target.value"}}
             min="0"
             max="100"
+            disabled={{interactionDisabled}}
             value={{submitConfidence}}
             steps="1"
           />
@@ -148,7 +187,7 @@
     {{/if}}
       <div class="selectContainer pt-1">
         <span class="p-value">TLP: </span>
-        <select class="w-100" onchange={{action (mut TLP) value="target.value"}}>
+        <select class="w-100" onchange={{action (mut TLP) value="target.value"}} disabled={{interactionDisabled}}>
             <option value="red">Red</option>
             <option value="amber">Amber</option>
             <option value="green">Green</option>
@@ -157,7 +196,7 @@
       </div>
       <div class="selectContainer">
         <span class="p-value">Severity: </span>
-        <select class="w-100" onchange={{action (mut submitSeverity) value="target.value"}}>
+        <select class="w-100" onchange={{action (mut submitSeverity) value="target.value"}} disabled={{interactionDisabled}}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
@@ -166,7 +205,7 @@
       </div>
       <div class="selectContainer">
         <span class="p-value">Threat Type: </span>
-        <select class="w-100" onchange={{action (mut submitThreatType) value="target.value"}}>
+        <select class="w-100" onchange={{action (mut submitThreatType) value="target.value"}} disabled={{interactionDisabled}}>
           {{#each threatTypes as |threatType|}}
             <option value="{{threatType.type}}">{{threatType.name}}</option>
           {{/each}}
@@ -178,9 +217,9 @@
           {{fa-icon "tags" fixedWidth=true}} Tags
         </h1>
         {{#each (limit selectedTags maxTagsInBlock) as |tag tagIndex|}}
-          <a href="{{details.url}}/search?status=active&tags={{tag}}" class="tag">
+          <a href="{{details.url}}/search?status=active&tags={{tag.name}}" class="tag">
             {{tag.name}}
-            <button class="tag-btn delete-tag-btn" {{action "deleteTag" tag}}>
+            <button class="tag-btn delete-tag-btn" {{action "deleteTag" tag}} disabled={{interactionDisabled}}>
               {{fa-icon "times" fixedWidth=true}}
             </button>
           </a>
@@ -199,6 +238,7 @@
                 searchEnabled=false
                 searchField="name"
                 placeholder="Visibility"
+                disabled=interactionDisabled
                 onChange=(action (mut selectedTagVisibility)) as |visibility|}}
                 {{visibility.name}}
               {{/power-select}}
@@ -215,7 +255,8 @@
                 searchMessage="Loading Tags ..."
                 searchPlaceholder="Search tags"
                 closeOnSelect=true
-                onOpen=(action "searchTags" '')
+                disabled=interactionDisabled
+                onOpen=(action "searchTags" "")
                 onChange=(action (mut selectedTag)) as |tag|
               }}
                 {{tag.name}}
@@ -227,7 +268,7 @@
               {{/power-select}}
 
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" {{action "addTag"}}>
+                <button class="btn btn-outline-secondary" type="button" {{action "addTag"}} disabled={{interactionDisabled}}>
                   {{fa-icon "plus" fixedWidth=true}}
                 </button>
               </div>
@@ -238,7 +279,7 @@
 
     <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-2">
       <button {{action "submitItems"}}
-              disabled={{createIsRunning}}
+              disabled={{interactionDisabled}}
               class="p-btn btn btn-secondary m-0">
         {{#if createIsRunning}}
           {{fa-icon "spinner-third" fixedWidth=true spin=true}}
@@ -248,13 +289,13 @@
       </button>
 
       {{#if createMessage}}
-        <div class="alert alert-info m-0">
+        <div class="create-message alert alert-info m-0">
           {{createMessage}} This is a message
         </div>
       {{/if}}
 
       {{#if createErrorMessage}}
-        <div class="alert alert-danger m-0">
+        <div class="create-message alert alert-danger m-0">
           {{createErrorMessage}}
         </div>
       {{/if}}

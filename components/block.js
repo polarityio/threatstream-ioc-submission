@@ -15,10 +15,12 @@ polarity.export = PolarityComponent.extend({
   maxTagsInBlock: 10,
   deleteMessage: '',
   deleteErrorMessage: '',
-  deleteIsRunning: '',
+  deleteIsRunning: false,
+  isDeleting: false,
+  entityToDelete: {},
   createMessage: '',
   createErrorMessage: '',
-  createIsRunning: '',
+  createIsRunning: false,
   submitThreatType: '',
   submitSeverity: 'low',
   submitConfidence: 50,
@@ -30,6 +32,9 @@ polarity.export = PolarityComponent.extend({
     { name: 'My Organization', value: 'red' }
   ],
   selectedTagVisibility: { name: 'My Organization', value: 'red' },
+  interactionDisabled: Ember.computed('isDeleting', 'createIsRunning', function () {
+    return this.get('isDeleting') || this.get('createIsRunning');
+  }),
   init() {
     this.set(
       'existingTags',
@@ -41,7 +46,15 @@ polarity.export = PolarityComponent.extend({
     this._super(...arguments);
   },
   actions: {
-    deleteItem: function (entity) {
+    initiateItemDeletion: function (entity) {
+      this.set('isDeleting', true);
+      this.set('entityToDelete', entity);
+    },
+    cancelItemDeletion: function () {
+      this.set('isDeleting', false);
+      this.set('entityToDelete', {});
+    },
+    confirmDelete: function () {
       const outerThis = this;
       outerThis.set('deleteMessage', '');
       outerThis.set('deleteErrorMessage', '');
@@ -52,7 +65,7 @@ polarity.export = PolarityComponent.extend({
         .sendIntegrationMessage({
           data: {
             action: 'deleteItem',
-            entity,
+            entity: outerThis.get('entityToDelete'),
             newIocs: outerThis.get('newIocs'),
             intelObjects: outerThis.get('entitiesThatExistInTS')
           }
@@ -72,6 +85,8 @@ polarity.export = PolarityComponent.extend({
           );
         })
         .finally(() => {
+          this.set('isDeleting', false);
+          this.set('entityToDelete', {});
           outerThis.set('deleteIsRunning', false);
           outerThis.get('block').notifyPropertyChange('data');
           setTimeout(() => {
@@ -180,7 +195,7 @@ polarity.export = PolarityComponent.extend({
     deleteTag: function (tagToDelete) {
       this.set(
         'selectedTags',
-        this.get('selectedTags').filter((selectedTag) => selectedTag !== tagToDelete)
+        this.get('selectedTags').filter((selectedTag) => selectedTag.name !== tagToDelete.name)
       );
     },
     searchTags: function (term) {

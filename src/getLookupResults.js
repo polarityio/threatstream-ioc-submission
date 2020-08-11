@@ -15,6 +15,8 @@ const getLookupResults = (
         _entitiesPartition
       );
 
+      const extractValue = fp.flow(fp.get('value'), fp.toLower);
+
       const entitiesThatExistInTS = await partitionFlatMap(
         async (entities) =>
           fp.getOr(
@@ -27,7 +29,7 @@ const getLookupResults = (
                 username: options.email,
                 api_key: options.apiKey,
                 value__regexp: fp.flow(
-                  fp.map(fp.toLower(fp.get('value'))),
+                  fp.map(extractValue),
                   fp.join('|')
                 )(entities)
               }
