@@ -20,9 +20,9 @@ polarity.export = PolarityComponent.extend({
   createErrorMessage: '',
   createIsRunning: '',
   submitThreatType: '',
-  submitSeverity: '',
+  submitSeverity: 'low',
   submitConfidence: 50,
-  TLP: '',
+  TLP: 'red',
   selectedTag: '',
   editingTags: false,
   tagVisibility: [
@@ -35,6 +35,7 @@ polarity.export = PolarityComponent.extend({
       'existingTags',
       this.get('orgTags').map((orgTag) => ({ name: orgTag }))
     );
+    this.set('submitThreatType', this.threatTypes[0].type);
     this.set('newIocs', this.get('notFoundEntities').slice(1));
     this.set('newIocsToSubmit', this.get('notFoundEntities').slice(0, 1));
     this._super(...arguments);

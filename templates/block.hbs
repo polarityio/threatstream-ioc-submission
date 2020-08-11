@@ -1,26 +1,30 @@
 {{#if entitiesThatExistInTS.length}}
-  <div class="titleIcon">{{fa-icon "info-circle" size="sm"}} Found IOCs</div>
+  <h1 class="p-title">
+    {{fa-icon "info-circle" size="sm"}} Found IOCs
+  </h1>
   <div class="note">
-    <span class="p-key"><span class="p-value"><em><b>NOTE:</b></em></span> Deletions of Found Items are perminant and does not confirm.</span>
+    <span class="p-key">
+      <span class="p-value"><em><b>DANGER:</b></em></span> Deleting an indicator cannot be undone.
+    </span>
   </div>
-  <table class="intelItemsWrapper">
-    <tbody class="intelItems">
+  <table class="w-100">
+    <tbody>
       {{#each entitiesThatExistInTS as |intel|}}
-        <tr class="intelItem">
-          <td class="intellValue">
-            <a href="{{details.url}}/detail/{{intel.type}}/{{intel.value}}">{{intel.value}}</a>
-          </td>
+        <tr>
           <td>
+            <a href="{{details.url}}/detail/{{intel.type}}/{{intel.value}}">{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+          </td>
+          <td class="type">
             <span>{{intel.type}}</span>
           </td>
-          <td>
+          <td class="icon">
             <span class="delete" {{action "deleteItem" intel}}>{{fa-icon "trash" fixedWidth=true}}</span>
           </td>
         </tr>
       {{/each}}
     </tbody>
   </table>
-  
+  <hr class="mt-2 mb-0">
   <div class="d-flex flex-row justify-content-between align-items-center">
     <div>
       {{#if deleteIsRunning}}
@@ -41,114 +45,110 @@
   </div>
 {{/if}}
 {{#if notFoundEntities}}
-  <div class="interactiveTable notFoundEntities">
-    <div class="titleIcon">{{fa-icon "info-circle" size="sm"}} New IOCs</div>
-    <table class="intelItemsWrapper">
-      <tbody class="intelItems">
+    <h1 class="p-title">
+      {{fa-icon "sparkles" size="sm" fixedWidth=true}} New IOCs
+    </h1>
+    <table class="w-100">
+      <tbody>
         {{#each newIocs as |entity|}}
-          <tr class="intelItem">
-            <td class="intellValue">
+          <tr>
+            <td>
               <span>{{entity.value}}</span>
             </td>
-            <td>
+            <td class="type">
               <span>{{entity.type}}</span>
             </td>
-            <td>
+            <td class="icon">
               <span class="add" {{action "addSubmitItem" entity}}>{{fa-icon "plus" fixedWidth=true}}</span>
             </td>
           </tr>
         {{/each}}
       </tbody>
     </table>
-  </div>
+
   {{#if (not newIocs.length)}}
     <div class="note">
       <span class="p-key"><em>NONE</em></span>
     </div>
   {{/if}}
-  <div class="interactiveTable notFoundEntities">
-    <div class="titleIcon">{{fa-icon "info-circle" size="sm"}} New IOCs to Submit</div>
-    <table class="intelItemsWrapper">
-      <tbody class="intelItems">
-        {{#each newIocsToSubmit as |entity|}}
-          <tr class="intelItem">
-            <td class="intellValue">
-              <span>{{entity.value}}</span>
-            </td>
-            <td>
-              <span>{{entity.type}}</span>
-            </td>
-            <td>
-              <span class="delete" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
-            </td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+  <h1 class="p-title">
+    {{fa-icon "upload" size="sm" fixedWidth=true}} New IOCs to Submit
+  </h1>
+  <table class="w-100">
+    <tbody>
+      {{#each newIocsToSubmit as |entity|}}
+        <tr>
+          <td class="intellValue">
+            <span>{{entity.value}}</span>
+          </td>
+          <td class="type">
+            <span>{{entity.type}}</span>
+          </td>
+          <td class="icon">
+            <span class="delete" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
     {{#if (not newIocsToSubmit.length)}}
       <div class="note">
         <span class="p-key"><em>NONE</em></span>
       </div>
     {{/if}}
-    <div class="inputs">
-      <div class="p-title">{{fa-icon "info-circle" size="sm"}} New IOCs Inputs</div>
-      <div class="checkbox-wrapper">
-        <span class="p-value">
-          {{input
-            class="submit-checkbox"
-            type="checkbox"
-            checked=isPublic
-            disabled=createIsRunning
-          }}
-        </span>
-        <span class="p-key"> &nbsp;Submit as Public</span>
-      </div>
-      <div class="checkbox-wrapper">
-        <span class="p-value">
-          {{input
-            class="submit-checkbox"
-            type="checkbox"
-            checked=isAnonymous
-            disabled=createIsRunning
-          }}
-        </span>
-        <span class="p-key"> &nbsp;Is Anonymous</span>
-      </div>
-      <div class="checkbox-wrapper">
-        <span class="p-value">
-          {{input
-            class="submit-checkbox"
-            type="checkbox"
-            checked=manuallySetConfidence
-            disabled=createIsRunning
-          }}
-        </span>
-        <span class="p-key"> &nbsp;Manually Set Confidence</span>
-      </div>
-      {{#if manuallySetConfidence}}
-        <div class="confidence">
-          <span class="p-value">Confidence: </span>
-          <span class="p-key">{{submitConfidence}}</span>
-          <div>
-            <input 
-              type="range"
-              class="confidenceRange"
-              oninput={{action (mut submitConfidence) value="target.value"}}
-              min="0"
-              max="100"
-              value={{submitConfidence}}
-              steps="1"
-            />
-          </div>
+      <h1 class="p-title py-1">
+        {{fa-icon "cog" size="sm" fixedWidth=true}} Submission Options
+      </h1>
+    <div>
+      <label>
+        {{input
+          type="checkbox"
+          checked=isPublic
+          disabled=createIsRunning
+        }}
+        <span class="align-top">Submit as Public</span>
+      </label>
+    </div>
+    <div>
+      <label>
+        {{input
+          type="checkbox"
+          checked=isAnonymous
+          disabled=createIsRunning
+        }}
+        <span class="align-top">Is Anonymous</span>
+      </label>
+    </div>
+    <div>
+      <label>
+        {{input
+          type="checkbox"
+          checked=manuallySetConfidence
+          disabled=createIsRunning
+        }}
+        <span class="align-top">Manually Set Confidence</span>
+      </label>
+    </div>
+    {{#if manuallySetConfidence}}
+      <div class="py-1">
+        <span class="p-key">Confidence: </span>
+        <span class="p-value">{{submitConfidence}}</span>
+        <div>
+          <input
+            type="range"
+            class="w-100 py-1"
+            oninput={{action (mut submitConfidence) value="target.value"}}
+            min="0"
+            max="100"
+            value={{submitConfidence}}
+            steps="1"
+          />
         </div>
-      {{/if}}
-
-      <div style="clear:both; margin-bottom: 5px;"></div>
-
-      <div class="selectContainer">
+      </div>
+    {{/if}}
+      <div class="selectContainer py-1">
         <span class="p-value">TLP: </span>
-
-        <select class="w-100 selectThreatType" size=5 onchange={{action (mut TLP) value="target.value"}}>
+        <select class="w-100" onchange={{action (mut TLP) value="target.value"}}>
             <option value="red">Red</option>
             <option value="amber">Amber</option>
             <option value="green">Green</option>
@@ -157,8 +157,7 @@
       </div>
       <div class="selectContainer">
         <span class="p-value">Severity: </span>
-
-        <select class="w-100 selectThreatType" size=5 onchange={{action (mut submitSeverity) value="target.value"}}>
+        <select class="w-100" onchange={{action (mut submitSeverity) value="target.value"}}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
@@ -167,8 +166,7 @@
       </div>
       <div class="selectContainer">
         <span class="p-value">Threat Type: </span>
-
-        <select class="w-100 selectThreatType" size=5 onchange={{action (mut submitThreatType) value="target.value"}}>
+        <select class="w-100" onchange={{action (mut submitThreatType) value="target.value"}}>
           {{#each threatTypes as |threatType|}}
             <option value="{{threatType.type}}">{{threatType.name}}</option>
           {{/each}}
@@ -237,32 +235,28 @@
           </div>
         {{/if}}
       </div>
-    </div>
-    <div class="d-flex flex-row justify-content-between align-items-center">
-      <div class="submitButton">
-        <div>
-          {{#if createIsRunning}}
-            {{fa-icon "spinner-third" fixedWidth=true spin=true}} Running
-          {{/if}}
-        </div>
-        <button {{action "submitItems"}}
-                disabled={{createIsRunning}}
-                class="p-btn btn btn-secondary mt-1">Submit IOCs
-        </button>
-      </div>
+
+    <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-2">
+      <button {{action "submitItems"}}
+              disabled={{createIsRunning}}
+              class="p-btn btn btn-secondary m-0">
+        {{#if createIsRunning}}
+          {{fa-icon "spinner-third" fixedWidth=true spin=true}}
+        {{else}}
+          Submit IOCs
+        {{/if}}
+      </button>
 
       {{#if createMessage}}
-        <div class="alert alert-info mt-1">
-          {{createMessage}}
+        <div class="alert alert-info m-0">
+          {{createMessage}} This is a message
         </div>
       {{/if}}
+
       {{#if createErrorMessage}}
-        <div class="alert alert-danger mt-1">
+        <div class="alert alert-danger m-0">
           {{createErrorMessage}}
         </div>
       {{/if}}
     </div>
-  </div>
 {{/if}}
-
-{{!-- severity confidnece and tags status organization --}}

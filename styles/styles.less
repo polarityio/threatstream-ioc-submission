@@ -1,18 +1,19 @@
 .external-link-icon {
-  font-size: 10px;
+  font-size: 8px;
+  margin-bottom: 1px;
 }
 
 .p-value {
   word-break: normal;
 }
 
-.intelItemsWrapper {
-  width: 100%;
-  & > .intelItems {
-    & > .intelItem {
-      //first child max width
-      //second childe min width
-    }
+table {
+  td.icon {
+    width: 25px;
+  }
+
+  td.type {
+    width: 60px;
   }
 }
 
@@ -30,38 +31,13 @@
   padding-bottom: 7px;
 }
 
-.interactiveTable {
-  padding-top: 20px;
-}
-
-.input-wrapper {
-  margin-top: 5px;
-}
-
-.inputs {
-  padding-top: 10px;
-}
-
-.submitButton {
-  margin-right: 10px;
-}
-
 .selectContainer {
   display: flex;
   padding-top: 2px;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
+
   .p-value {
     width: 110px;
-  }
-  .selectThreatType { 
-    height: 40px;
-  }
-}
-
-.confidence {
-  padding-top: 5px;
-  .confidenceRange {
-    width: 100%;
   }
 }
 
@@ -78,7 +54,6 @@
   color: #ff4559;
 }
 
-
 .edit-tags-btn-container {
   margin-top: 10px;
 }
@@ -86,6 +61,7 @@
 .edit-tags-container {
   margin-top: 10px;
   margin-bottom: 10px;
+
   .add-tag-container {
     margin-top: 10px;
   }
@@ -116,4 +92,11 @@ div.item:last-child {
 div.additional-sources-count {
   text-align: right;
   padding-right: 5px;
+}
+
+.p-btn {
+  height: 30px;
+  font-size: 12px !important;
+  font-weight: 500;
+  min-width: 95px;
 }
