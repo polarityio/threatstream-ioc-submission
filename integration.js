@@ -32,7 +32,7 @@ const doLookup = async (entities, { url, uiUrl, ..._options }, cb) => {
       Logger
     );
   } catch (error) {
-    Logger.error({ error }, 'Get Lookup Results Failed');
+    Logger.error(error, 'Get Lookup Results Failed');
     return cb(handleError(error));
   }
 
@@ -188,7 +188,7 @@ const searchTags = async (options) => {
   caches.set(`${options.email}${options.apiKey}needToSearchTagsAgain`, false);
   try {
     if (needToSearchTagsAgain) {
-      
+
       caches.set(`${options.email}${options.apiKey}needToSearchTagsAgain`, false);
       caches.set(`${options.email}${options.apiKey}tags`, orgTags);
     }
