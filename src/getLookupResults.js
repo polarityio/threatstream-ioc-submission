@@ -21,13 +21,16 @@ const getLookupResults = (
             [],
             'body.objects',
             await requestWithDefaults({
-              url: `${options.url}/api/v2/intelligence/?username=${
-                options.email
-              }&api_key=${options.apiKey}&value__regexp=${fp.flow(
-                fp.map(fp.get('value')),
-                fp.join('|')
-              )(entities)}`,
-              method: 'get'
+              url: `${options.url}/api/v2/intelligence`,
+              method: 'get',
+              qs: {
+                username: options.email,
+                api_key: options.apiKey,
+                value__regexp: fp.flow(
+                  fp.map(fp.toLower(fp.get('value'))),
+                  fp.join('|')
+                )(entities)
+              }
             })
           ),
         5,
@@ -39,7 +42,11 @@ const getLookupResults = (
         fp.map(fp.get('name'))
       )(
         await requestWithDefaults({
-          uri: `${options.url}/api/v1/orgtag/?username=${options.email}&api_key=${options.apiKey}`
+          uri: `${options.url}/api/v1/orgtag`,
+          qs: {
+            username: options.email,
+            api_key: options.apiKey
+          }
         })
       );
 
