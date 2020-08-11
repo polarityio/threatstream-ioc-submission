@@ -17,13 +17,30 @@ table {
   }
 }
 
-.delete {
-  color: #ff2753;
-  font-size: 13px;
+.deletion-confirmation-modal{
+  position: absolute;
+  top: 100px;
+  background-color: #aaa;
+  padding: 10px;
+  width: auto;
+  margin: 10px;
+  min-height: 100px;
 }
 
-.remove {
+.icon-btn{
   font-size: 13px;
+
+  &.delete{
+    color: #ff2753;
+  }
+
+  &.remove, &.add{
+    color: #888;
+  }
+
+  :hover{
+    filter: brightness(60%);
+  }
 }
 
 .titleIcon {

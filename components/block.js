@@ -15,7 +15,8 @@ polarity.export = PolarityComponent.extend({
   maxTagsInBlock: 10,
   deleteMessage: '',
   deleteErrorMessage: '',
-  deleteIsRunning: '',
+  deleteIsRunning: false,
+  deleteInitiated: false,
   createMessage: '',
   createErrorMessage: '',
   createIsRunning: '',
@@ -41,6 +42,7 @@ polarity.export = PolarityComponent.extend({
     this._super(...arguments);
   },
   actions: {
+    initiatedDelete:
     deleteItem: function (entity) {
       const outerThis = this;
       outerThis.set('deleteMessage', '');
@@ -210,5 +212,8 @@ polarity.export = PolarityComponent.extend({
         this.set('selectedTags', selectedTags.concat(selectedTag));
       }
     }
+  },
+  _deleteTag(){
+
   }
 });

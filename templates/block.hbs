@@ -2,6 +2,17 @@
   <h1 class="p-title">
     {{fa-icon "info-circle" size="sm"}} Found IOCs
   </h1>
+
+  <div class="deletion-confirmation-modal d-flex flex-columns">
+    <div>
+      Are you sure?
+    </div>
+    <div>
+      <button>Yes</button>
+      <button>No</button>
+    </div>
+  </div>
+
   <div class="note">
     <span class="p-key">
       <span class="p-value"><em><b>DANGER:</b></em></span> Deleting an indicator cannot be undone.
@@ -18,7 +29,7 @@
             <span>{{intel.type}}</span>
           </td>
           <td class="icon">
-            <span class="delete" {{action "deleteItem" intel}}>{{fa-icon "trash" fixedWidth=true}}</span>
+            <span class="icon-btn delete" {{action "deleteItem" intel}}>{{fa-icon "trash" fixedWidth=true disabled=true}}</span>
           </td>
         </tr>
       {{/each}}
@@ -59,7 +70,7 @@
               <span>{{entity.type}}</span>
             </td>
             <td class="icon">
-              <span class="add" {{action "addSubmitItem" entity}} title="Add IOC to submission list">{{fa-icon "plus" fixedWidth=true}}</span>
+              <span class="icon-btn add" {{action "addSubmitItem" entity}} title="Add IOC to submission list">{{fa-icon "plus" fixedWidth=true}}</span>
             </td>
           </tr>
         {{/each}}
@@ -78,14 +89,14 @@
     <tbody>
       {{#each newIocsToSubmit as |entity|}}
         <tr>
-          <td class="intellValue">
+          <td>
             <span>{{entity.value}}</span>
           </td>
           <td class="type">
             <span>{{entity.type}}</span>
           </td>
           <td class="icon">
-            <span class="remove" title="Remove IOC from submission list" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
+            <span class="icon-btn remove" title="Remove IOC from submission list" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
           </td>
         </tr>
       {{/each}}
