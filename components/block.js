@@ -78,7 +78,7 @@ polarity.export = PolarityComponent.extend({
             outerThis.set('deleteMessage', '');
             outerThis.set('deleteErrorMessage', '');
             outerThis.get('block').notifyPropertyChange('data');
-          }, 3000);
+          }, 5000);
         });
     },
     removeSubmitItem: function (entity) {
@@ -122,7 +122,7 @@ polarity.export = PolarityComponent.extend({
         setTimeout(() => {
           outerThis.set('createErrorMessage', '');
           outerThis.get('block').notifyPropertyChange('data');
-        }, 1500);
+        }, 5000);
         return;
       }
 
@@ -170,7 +170,7 @@ polarity.export = PolarityComponent.extend({
             outerThis.set('createMessage', '');
             outerThis.set('createErrorMessage', '');
             outerThis.get('block').notifyPropertyChange('data');
-          }, 3000);
+          }, 5000);
         });
     },
     editTags: function () {
