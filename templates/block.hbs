@@ -59,7 +59,7 @@
               <span>{{entity.type}}</span>
             </td>
             <td class="icon">
-              <span class="add" {{action "addSubmitItem" entity}}>{{fa-icon "plus" fixedWidth=true}}</span>
+              <span class="add" {{action "addSubmitItem" entity}} title="Add IOC to submission list">{{fa-icon "plus" fixedWidth=true}}</span>
             </td>
           </tr>
         {{/each}}
@@ -85,7 +85,7 @@
             <span>{{entity.type}}</span>
           </td>
           <td class="icon">
-            <span class="delete" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
+            <span class="remove" title="Remove IOC from submission list" {{action "removeSubmitItem" entity}}>{{fa-icon "minus" fixedWidth=true}}</span>
           </td>
         </tr>
       {{/each}}
@@ -146,7 +146,7 @@
         </div>
       </div>
     {{/if}}
-      <div class="selectContainer py-1">
+      <div class="selectContainer pt-1">
         <span class="p-value">TLP: </span>
         <select class="w-100" onchange={{action (mut TLP) value="target.value"}}>
             <option value="red">Red</option>
