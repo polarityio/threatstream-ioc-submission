@@ -63,6 +63,15 @@ module.exports = {
       type: 'password',
       userCanEdit: true,
       adminOnly: false
+    },
+    {
+      key: 'allowDelete',
+      name: 'Allow IOC Deletion',
+      description: 'This setting allows you to perminately delete all records on Anomali ThreatStream related to an IOC.',
+      default: true,
+      type: 'boolean',
+      userCanEdit: true,
+      adminOnly: false
     }
   ]
 };

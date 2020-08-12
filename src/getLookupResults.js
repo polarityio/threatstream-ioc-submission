@@ -1,19 +1,21 @@
 const fp = require('lodash/fp');
 
-const { partitionFlatMap, splitOutIgnoredIps } = require('./dataTransformations');
+const { _P, partitionFlatMap, splitOutIgnoredIps } = require('./dataTransformations');
 const createLookupResults = require('./createLookupResults');
 
-const getLookupResults = (entities, options, requestWithDefaults, Logger) =>
+const getLookupResults = (
+  entities,
+  options,
+  requestWithDefaults,
+  Logger
+) =>
   partitionFlatMap(
     async (_entitiesPartition) => {
       const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(
         _entitiesPartition
       );
 
-      const getEntityLower = fp.flow(
-        fp.get('value'),
-        fp.toLower
-      );
+      const extractValue = fp.flow(fp.get('value'), fp.toLower);
 
       const entitiesThatExistInTS = await partitionFlatMap(
         async (entities) =>
@@ -27,7 +29,7 @@ const getLookupResults = (entities, options, requestWithDefaults, Logger) =>
                 username: options.email,
                 api_key: options.apiKey,
                 value__regexp: fp.flow(
-                  fp.map(getEntityLower),
+                  fp.map(extractValue),
                   fp.join('|')
                 )(entities)
               }
