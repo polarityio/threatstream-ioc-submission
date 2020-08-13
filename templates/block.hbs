@@ -26,7 +26,11 @@
       {{#each entitiesThatExistInTS as |intel|}}
         <tr>
           <td>
-            <a href={{if (not interactionDisabled) "{{details.url}}/detail/{{intel.type}}/{{intel.value}}"}}>{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+            {{#if (not interactionDisabled)}}
+              <a href="{{details.url}}/detail/{{intel.type}}/{{intel.value}}">{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+            {{else}}
+              <a>{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+            {{/if}}
           </td>
           <td class="type">
             <span>{{intel.type}}</span>
