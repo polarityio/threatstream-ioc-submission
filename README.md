@@ -1,6 +1,6 @@
 # Polarity Anomali ThreatStream IOC Submission Integration
 
-Polarity's ThreatStream integration IOC Submission gives users access bulk IOC submission to the Anomali's ThreatStream platform.
+Polarity's ThreatStream IOC Submission integration gives users allows users to submit indicators of compromise to Anomali's ThreatStream platform.
 
 To learn more about Anomali ThreatStream please see their official website at [https://www.anomali.com/platform/threatstream](https://www.anomali.com/platform/threatstream)
 
@@ -21,12 +21,15 @@ The base URL for the Anomali ThreatStream UI including the schema (i.e., https:/
 
 ### Email
 
-The Email associated with your Anomali ThreatStream account.
+The email associated with your Anomali ThreatStream account.
 
 ### API Key
 
 The API Key for Anomali ThreatStream.
 
+### Allow IOC Deletion
+
+If checked, users will be able to permanently delete an indicator from Anomali Threatstream. (this setting must be set to `User can view only`.
 
 ## Polarity
 
