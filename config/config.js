@@ -2,7 +2,7 @@ module.exports = {
   name: 'Anomali ThreatStream IOC Submission',
   acronym: 'TSI',
   description:
-    "Polarity's ThreatStream integration IOC Submission gives users access bulk IOC submission to the Anomali's ThreatStream platform.",
+    "Polarity's ThreatStream IOC Submission integration gives users allows users to submit indicators of compromise to Anomali's ThreatStream platform.",
   entityTypes: ['IPv4', 'IPv6', 'email', 'md5', 'sha1', 'sha256', 'domain', 'url'],
   styles: ['./styles/styles.less'],
   onDemandOnly: true,
@@ -49,7 +49,7 @@ module.exports = {
     {
       key: 'email',
       name: 'Email',
-      description: 'The Email associated with your Anomali ThreatStream account.',
+      description: 'The email associated with your Anomali ThreatStream account.',
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -67,7 +67,7 @@ module.exports = {
     {
       key: 'allowDelete',
       name: 'Allow IOC Deletion',
-      description: 'This setting allows you to perminately delete all records on Anomali ThreatStream related to an IOC.',
+      description: 'If checked, users will be able to permanently delete an indicator from Anomali Threatstream. (this setting must be set to `User can view only`.',
       default: true,
       type: 'boolean',
       userCanEdit: true,
