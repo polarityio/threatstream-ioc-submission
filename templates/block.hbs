@@ -16,7 +16,7 @@
         </span>
         <div class="delete-confirmation-button">
           <button class="cancel-delete" {{action "cancelItemDeletion"}}>Cancel</button>
-          <button class="p-btn btn btn-secondary m-0" {{action "confirmDelete"}}>Confirm</button>
+          <button class="p-btn btn btn-danger m-0" {{action "confirmDelete"}}>Delete</button>
         </div>
       </div>
     </div>
@@ -47,7 +47,7 @@
       {{/each}}
     </tbody>
   </table>
-  
+
   <div class="d-flex flex-row justify-content-between align-items-center">
     <div>
       {{#if deleteIsRunning}}
@@ -119,7 +119,7 @@
             <button
               class="no-style-button remove"
               title="Remove IOC from submission list"
-              {{action "removeSubmitItem" entity}} 
+              {{action "removeSubmitItem" entity}}
               disabled={{interactionDisabled}}
             >
               {{fa-icon "minus" fixedWidth=true}}
@@ -290,7 +290,7 @@
 
       {{#if createMessage}}
         <div class="create-message alert alert-info m-0">
-          {{createMessage}} This is a message
+          {{createMessage}}
         </div>
       {{/if}}
 
