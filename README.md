@@ -4,6 +4,7 @@ Polarity's ThreatStream IOC Submission integration gives users allows users to s
 
 To learn more about Anomali ThreatStream please see their official website at [https://www.anomali.com/platform/threatstream](https://www.anomali.com/platform/threatstream)
 
+<img src="./assets/overlay.png" width="50%">  
 
 ## ThreatStream Integration Options
 
