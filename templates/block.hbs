@@ -305,3 +305,9 @@
       {{/if}}
     </div>
 {{/if}}
+<div class={{if (and (not notFoundEntities.length) interactionDisabled) "modal-open"}}></div>
+{{#if (and (not entitiesThatExistInTS.length) (not notFoundEntities.length))}}
+  <div class="note">
+    <span class="p-key"><em>All Found IOCs have been deleted</em></span>
+  </div>
+{{/if}}
