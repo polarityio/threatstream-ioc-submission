@@ -14,6 +14,14 @@ module.exports = {
       file: './templates/block.hbs'
     }
   },
+  summary: {
+    component: {
+      file: './components/summary.js'
+    },
+    template: {
+      file: './templates/summary.hbs'
+    }
+  },
   request: {
     cert: '',
     key: '',
@@ -67,7 +75,8 @@ module.exports = {
     {
       key: 'allowDelete',
       name: 'Allow IOC Deletion',
-      description: 'If checked, users will be able to permanently delete an indicator from Anomali Threatstream. (this setting must be set to `User can view only`.',
+      description:
+        'If checked, users will be able to permanently delete an indicator from Anomali Threatstream. (this setting must be set to `User can view only`.',
       default: true,
       type: 'boolean',
       userCanEdit: true,
