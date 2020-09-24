@@ -58,7 +58,7 @@ polarity.export = PolarityComponent.extend({
       'entitiesThatExistInTS',
       this.get(`details.entitiesThatExistInTS${this.get('maxUniqueKeyNumber')}`)
     );
-    
+
     this._super(...arguments);
   },
   observer: Ember.on(
@@ -74,7 +74,7 @@ polarity.export = PolarityComponent.extend({
           'entitiesThatExistInTS',
           this.get(`details.entitiesThatExistInTS${this.get('maxUniqueKeyNumber')}`)
         );
-        
+
         const threatTypes = this.get(
           `details.threatTypes${this.get('maxUniqueKeyNumber')}`
         );
@@ -144,6 +144,24 @@ polarity.export = PolarityComponent.extend({
             outerThis.get('block').notifyPropertyChange('data');
           }, 5000);
         });
+    },
+    removeAllSubmitItems: function () {
+      const allIOCs = this.get('newIocs').concat(this.get('newIocsToSubmit'));
+
+      this.set('newIocs', allIOCs);
+      this.set('newIocsToSubmit', []);
+
+      this.updateCategorySubmitDisabled([]);
+      this.get('block').notifyPropertyChange('data');
+    },
+    addAllSubmitItems: function () {
+      const allIOCs = this.get('newIocs').concat(this.get('newIocsToSubmit'));
+
+      this.set('newIocs', []);
+      this.set('newIocsToSubmit', allIOCs);
+
+      this.updateCategorySubmitDisabled(allIOCs);
+      this.get('block').notifyPropertyChange('data');
     },
     removeSubmitItem: function (entity) {
       this.set('newIocs', this.get('newIocs').concat(entity));

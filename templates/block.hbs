@@ -1,7 +1,7 @@
 <div class={{if (and (not (or newIocs.length newIocsToSubmit.length)) interactionDisabled) "modal-open"}}>
   {{#if entitiesThatExistInTS.length}}
     <h1 class="p-title">
-      {{fa-icon "info-circle" size="sm"}} Already In ThreatStream
+      {{fa-icon "info-circle" size="sm"}} Already In TS
     </h1>
     {{#if interactionDisabled}}
       <div class="ioc-deletion-modal">
@@ -74,9 +74,21 @@
   {{/if}}
 
   {{#if (or newIocs.length newIocsToSubmit.length)}}
-      <h1 class="p-title">
-        {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In ThreatStream
-      </h1>
+      <div class="title-with-button">
+        <h1 class="p-title">
+          {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In TS
+        </h1>
+        {{#if newIocs.length}}
+          <button
+            class="no-style-button add"
+            {{action "addAllSubmitItems"}}
+            title="Add all IOCs to submission list"
+            disabled={{interactionDisabled}}
+          >
+            Add All
+          </button>
+        {{/if}}
+      </div>
       <table class="w-100">
         <tbody>
           {{#each newIocs as |entity|}}
@@ -107,9 +119,21 @@
         <span class="p-key"><em>NONE</em></span>
       </div>
     {{/if}}
-    <h1 class="p-title">
-      {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to ThreatStream
-    </h1>
+    <div class="title-with-button">
+      <h1 class="p-title">
+        {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to TS
+      </h1>
+      {{#if newIocsToSubmit.length}}
+        <button
+          class="no-style-button remove"
+          title="Remove all IOCs from submission list"
+          {{action "removeAllSubmitItems"}}
+          disabled={{interactionDisabled}}
+        >
+          Remove All
+        </button>
+      {{/if}}
+    </div>
     <table class="w-100">
       <tbody>
         {{#each newIocsToSubmit as |entity|}}

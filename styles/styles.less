@@ -9,7 +9,7 @@
   &:first-child {
     margin-top: 5px !important;
   }
-  &.submission-options{
+  &.submission-options {
     margin-top: 15px !important;
   }
   height: 15px !important;
@@ -40,6 +40,7 @@ table {
   font-family: inherit;
   border: 0;
   padding: 0;
+  background-color: transparent;
 
   &:hover,
   &:focus {
@@ -164,7 +165,7 @@ div.additional-sources-count {
 
   .p-key {
     color: #616a71 !important;
-    
+
     div {
       padding-top: 4px;
     }
@@ -180,5 +181,18 @@ div.additional-sources-count {
       background-color: white;
       border-radius: 2px;
     }
+  }
+}
+
+.title-with-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  & > button {
+    color: #5ccd18 !important; 
+    padding-right: 5px;
+    font-size: 12px
   }
 }
