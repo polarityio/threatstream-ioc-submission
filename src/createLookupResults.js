@@ -4,11 +4,15 @@ const { THREAT_TYPES } = require('./constants');
 let maxUniqueKeyNumber = 0;
 
 const createLookupResults = (options, entities, _entitiesThatExistInTS, orgTags) => {
-  const entitiesThatExistInTS = fp.filter(
-    ({ value }) =>
-      fp.any(({ value: _value }) => fp.toLower(value) === fp.toLower(_value), entities),
-    _entitiesThatExistInTS
-  );
+  const entitiesThatExistInTS = fp.flow(
+    fp.filter(({ value }) =>
+      fp.any(({ value: _value }) => fp.toLower(value) === fp.toLower(_value), entities)
+    ),
+    fp.map((entity) => ({
+      ...entity,
+      type: entity.type === 'md5' ? 'hash' : entity.type
+    }))
+  )(_entitiesThatExistInTS);
   const notFoundEntities = getNotFoundEntities(entitiesThatExistInTS, entities);
   const summary = [
     ...(entitiesThatExistInTS.length ? ['Entities Found'] : []),

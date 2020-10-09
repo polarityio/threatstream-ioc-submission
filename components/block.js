@@ -278,7 +278,17 @@ polarity.export = PolarityComponent.extend({
 
           resolve([{ name: term, isNew: true }].concat(tags));
         } else {
-          resolve(outerThis.get('existingTags'));
+          const newExistingTags = outerThis
+            .get('orgTags')
+            .filter(
+              (orgTag) =>
+                !this.get('selectedTags').some(
+                  (_selectedTag) =>
+                    _selectedTag.name.toLowerCase().trim() === orgTag.toLowerCase().trim()
+                )
+            );
+          outerThis.set('existingTags', newExistingTags);
+          resolve(newExistingTags);
         }
       });
     },
@@ -286,11 +296,12 @@ polarity.export = PolarityComponent.extend({
       const selectedTag = this.get('selectedTag');
       const selectedTags = this.get('selectedTags');
 
-      let isDuplicate = selectedTags.find(
+      let isDuplicate = selectedTags.some(
         (tag) => tag.name.toLowerCase() === selectedTag.name.toLowerCase()
       );
 
       if (!isDuplicate) {
+        this.set('selectedTag', '');
         this.set('selectedTags', selectedTags.concat(selectedTag));
       }
     }

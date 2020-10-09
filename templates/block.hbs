@@ -28,7 +28,7 @@
           <tr>
             <td>
               {{#if (not interactionDisabled)}}
-                <a href="{{details.url}}/detail/{{intel.type}}/{{intel.value}}">{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+                <a href="{{details.url}}/detail/{{intel.value}}">{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
               {{else}}
                 <a>{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
               {{/if}}
@@ -333,6 +333,6 @@
 </div>
 {{#if (and (not entitiesThatExistInTS.length) (not (or newIocs.length newIocsToSubmit.length)))}}
   <div class="note">
-    <span class="p-key"><em>All Already In MISP IOCs have been deleted</em></span>
+    <span class="p-key"><em>All Already In ThreatStream IOCs have been deleted</em></span>
   </div>
 {{/if}}
