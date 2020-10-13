@@ -41,8 +41,6 @@ const doLookup = async (entities, { url, uiUrl, ..._options }, cb) => {
 };
 
 
-
-
 const onMessage = async ({ data: { action, ...actionParams} }, options, callback) => {
   if (action === 'deleteItem') {
     deleteItem(actionParams, options, Logger, callback);

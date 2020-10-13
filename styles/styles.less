@@ -5,6 +5,15 @@
 
 .p-title {
   font-weight: 600;
+  padding-top: 3px !important;
+  &:first-child {
+    margin-top: 5px !important;
+  }
+  &.submission-options {
+    margin-top: 15px !important;
+  }
+  height: 15px !important;
+  min-height: 15px !important;
 }
 
 .p-value {
@@ -31,6 +40,7 @@ table {
   font-family: inherit;
   border: 0;
   padding: 0;
+  background-color: transparent;
 
   &:hover,
   &:focus {
@@ -137,15 +147,15 @@ div.additional-sources-count {
 }
 
 .modal-open {
-  min-height: 145px;
+  min-height: 175px;
 }
 
 .ioc-deletion-modal {
   position: absolute;
   background: #ededed;
   border: #cdcdcd 1px solid;
-  top: 65px;
-  left: 36px;
+  top: 30x;
+  left: 30px;
   width: calc(100% - 60px);
   z-index: 1;
   padding-top: 6px;
@@ -155,7 +165,7 @@ div.additional-sources-count {
 
   .p-key {
     color: #616a71 !important;
-    
+
     div {
       padding-top: 4px;
     }
@@ -171,5 +181,18 @@ div.additional-sources-count {
       background-color: white;
       border-radius: 2px;
     }
+  }
+}
+
+.title-with-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  & > button {
+    color: #5ccd18 !important; 
+    padding-right: 5px;
+    font-size: 12px
   }
 }

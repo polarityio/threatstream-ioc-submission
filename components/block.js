@@ -1,16 +1,16 @@
 polarity.export = PolarityComponent.extend({
   details: Ember.computed.alias('block.data.details'),
-  entitiesThatExistInTS: Ember.computed.alias('details.entitiesThatExistInTS'),
-  notFoundEntities: Ember.computed.alias('details.notFoundEntities'),
-  threatTypes: Ember.computed.alias('details.threatTypes'),
-  orgTags: Ember.computed.alias('details.orgTags'),
-  existingTags: [],
+  maxUniqueKeyNumber: Ember.computed.alias('details.maxUniqueKeyNumber'),
   isPublic: false,
   isAnonymous: false,
   manuallySetConfidence: false,
+  orgTags: [],
+  existingTags: [],
+  threatTypes: [],
+  entitiesThatExistInTS: [],
   newIocs: [],
   newIocsToSubmit: [],
-  selectedTags: [{ name: 'Polarity' }],
+  selectedTags: [{ name: 'Submitted_By_Polarity' }],
   tagsErrorMessage: '',
   maxTagsInBlock: 10,
   deleteMessage: '',
@@ -36,15 +36,64 @@ polarity.export = PolarityComponent.extend({
     return this.get('isDeleting') || this.get('createIsRunning');
   }),
   init() {
+    const threatTypes = this.get(`details.threatTypes${this.get('maxUniqueKeyNumber')}`);
+    const orgTags = this.get(`details.orgTags${this.get('maxUniqueKeyNumber')}`);
+    this.set('threatTypes', threatTypes);
+    this.set('orgTags', orgTags);
+
     this.set(
       'existingTags',
-      this.get('orgTags').map((orgTag) => ({ name: orgTag }))
+      orgTags.map((orgTag) => ({
+        name: orgTag
+      }))
     );
-    this.set('submitThreatType', this.threatTypes[0].type);
-    this.set('newIocs', this.get('notFoundEntities').slice(1));
-    this.set('newIocsToSubmit', this.get('notFoundEntities').slice(0, 1));
+    this.set('submitThreatType', threatTypes[0].type);
+
+    this.set(
+      'newIocs',
+      this.get(`details.notFoundEntities${this.get('maxUniqueKeyNumber')}`)
+    );
+
+    this.set(
+      'entitiesThatExistInTS',
+      this.get(`details.entitiesThatExistInTS${this.get('maxUniqueKeyNumber')}`)
+    );
+
     this._super(...arguments);
   },
+  observer: Ember.on(
+    'willUpdate',
+    Ember.observer('details.maxUniqueKeyNumber', function () {
+      if (this.get('maxUniqueKeyNumber') !== this.get('_maxUniqueKeyNumber')) {
+        this.set('_maxUniqueKeyNumber', this.get('maxUniqueKeyNumber'));
+        this.set(
+          'newIocs',
+          this.get(`details.notFoundEntities${this.get('maxUniqueKeyNumber')}`)
+        );
+        this.set(
+          'entitiesThatExistInTS',
+          this.get(`details.entitiesThatExistInTS${this.get('maxUniqueKeyNumber')}`)
+        );
+
+        const threatTypes = this.get(
+          `details.threatTypes${this.get('maxUniqueKeyNumber')}`
+        );
+        const orgTags = this.get(`details.orgTags${this.get('maxUniqueKeyNumber')}`);
+
+        this.set('threatTypes', threatTypes);
+        this.set('orgTags', orgTags);
+        this.set(
+          'existingTags',
+          orgTags.map((orgTag) => ({
+            name: orgTag
+          }))
+        );
+        this.set('submitThreatType', threatTypes[0].type);
+
+        this.set('newIocsToSubmit', []);
+      }
+    })
+  ),
   actions: {
     initiateItemDeletion: function (entity) {
       this.set('isDeleting', true);
@@ -95,6 +144,24 @@ polarity.export = PolarityComponent.extend({
             outerThis.get('block').notifyPropertyChange('data');
           }, 5000);
         });
+    },
+    removeAllSubmitItems: function () {
+      const allIOCs = this.get('newIocs').concat(this.get('newIocsToSubmit'));
+
+      this.set('newIocs', allIOCs);
+      this.set('newIocsToSubmit', []);
+
+      this.updateCategorySubmitDisabled([]);
+      this.get('block').notifyPropertyChange('data');
+    },
+    addAllSubmitItems: function () {
+      const allIOCs = this.get('newIocs').concat(this.get('newIocsToSubmit'));
+
+      this.set('newIocs', []);
+      this.set('newIocsToSubmit', allIOCs);
+
+      this.updateCategorySubmitDisabled(allIOCs);
+      this.get('block').notifyPropertyChange('data');
     },
     removeSubmitItem: function (entity) {
       this.set('newIocs', this.get('newIocs').concat(entity));
@@ -195,7 +262,9 @@ polarity.export = PolarityComponent.extend({
     deleteTag: function (tagToDelete) {
       this.set(
         'selectedTags',
-        this.get('selectedTags').filter((selectedTag) => selectedTag.name !== tagToDelete.name)
+        this.get('selectedTags').filter(
+          (selectedTag) => selectedTag.name !== tagToDelete.name
+        )
       );
     },
     searchTags: function (term) {
@@ -209,7 +278,17 @@ polarity.export = PolarityComponent.extend({
 
           resolve([{ name: term, isNew: true }].concat(tags));
         } else {
-          resolve(outerThis.get('existingTags'));
+          const newExistingTags = outerThis
+            .get('orgTags')
+            .filter(
+              (orgTag) =>
+                !this.get('selectedTags').some(
+                  (_selectedTag) =>
+                    _selectedTag.name.toLowerCase().trim() === orgTag.toLowerCase().trim()
+                )
+            );
+          outerThis.set('existingTags', newExistingTags);
+          resolve(newExistingTags);
         }
       });
     },
@@ -217,11 +296,12 @@ polarity.export = PolarityComponent.extend({
       const selectedTag = this.get('selectedTag');
       const selectedTags = this.get('selectedTags');
 
-      let isDuplicate = selectedTags.find(
+      let isDuplicate = selectedTags.some(
         (tag) => tag.name.toLowerCase() === selectedTag.name.toLowerCase()
       );
 
       if (!isDuplicate) {
+        this.set('selectedTag', '');
         this.set('selectedTags', selectedTags.concat(selectedTag));
       }
     }
