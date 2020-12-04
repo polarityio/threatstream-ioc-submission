@@ -48,8 +48,6 @@ const onMessage = async ({ data: { action, ...actionParams} }, options, callback
     submitItems(actionParams, options, Logger, callback);
   } else if (action === 'getId') {
     submitItems(actionParams, options, Logger, callback);
-  } else if (action === 'searchTags') {
-    searchTags();
   } else {
     callback(null, {});
   }
@@ -66,8 +64,13 @@ const deleteItem = async (
   let _intelId;
   if (!entity.id) {
     const result = await requestWithDefaults({
-      url: `${options.url}/api/v2/intelligence/?username=${options.email}&api_key=${options.apiKey}&value__regexp=${entity.value}`,
-      method: 'get'
+      url: `${options.url}/api/v2/intelligence/`,
+      method: 'GET',
+      qs: {
+        username: options.email,
+        api_key: options.apiKey,
+        value__regexp: entity.value
+      }
     });
 
     _intelId = fp.get('body.objects.0.id', result);
@@ -81,8 +84,9 @@ const deleteItem = async (
 
   try {
     await requestWithDefaults({
-      url: `${options.url}/api/v2/intelligence/${_intelId}/?username=${options.email}&api_key=${options.apiKey}`,
-      method: 'delete'
+      url: `${options.url}/api/v2/intelligence/${_intelId}/`,
+      method: 'DELETE',
+      qs: { username: options.email, api_key: options.apiKey }
     });
   } catch (error) {
     Logger.error({ error }, 'Intel Deletion Error');
@@ -118,8 +122,12 @@ const submitItems = async (
       fp.map(
         (entity) =>
           requestWithDefaults({
-            url: `${options.url}/api/v1/intelligence/import/?username=${options.email}&api_key=${options.apiKey}`,
+            url: `${options.url}/api/v1/intelligence/import/`,
             method: 'POST',
+            qs: {
+              username: options.email,
+              api_key: options.apiKey
+            },
             headers: {
               entity
             },
@@ -178,29 +186,6 @@ const submitItems = async (
     return callback({
       err: error,
       detail: 'Failed to Create IOC in Anomali ThreatStream'
-    });
-  }
-};
-
-const searchTags = async (options) => {
-  caches.set(`${options.email}${options.apiKey}needToSearchTagsAgain`, false);
-  try {
-    if (needToSearchTagsAgain) {
-
-      caches.set(`${options.email}${options.apiKey}needToSearchTagsAgain`, false);
-      caches.set(`${options.email}${options.apiKey}tags`, orgTags);
-    }
-    callback(null, {
-      orgTags: caches.get(`${options.email}${options.apiKey}tags`)
-    });
-  } catch (error) {
-    Logger.trace(
-      { detail: 'Failed to Get Tags from Anomali ThreatStream', error },
-      'Get Tags Failed'
-    );
-    return callback({
-      err: error,
-      detail: 'Failed to Get Tags from Anomali ThreatStream'
     });
   }
 };
