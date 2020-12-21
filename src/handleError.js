@@ -45,15 +45,14 @@ const handleError = (error) =>
     STATUS_CODE_ERROR_MESSAGE['unknown']
   )(error);
 
-const checkForInternalServiceError = (statusCode, response) => {
+const checkForInternalServiceError = (statusCode, response = {}) => {
   const { errors } = response;
   if (errors && errors[0]) {
-    const error = errors[0]
+    const error = errors[0];
     const internalServiceError = Error('Internal Service Error');
     internalServiceError.status = 'internalServiceError';
     internalServiceError.description = error.message;
     throw internalServiceError;
-
   }
   return response;
 };
