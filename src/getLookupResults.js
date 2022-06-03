@@ -40,11 +40,24 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
     })
   );
 
+  const workGroups = fp.getOr(
+    [],
+    'body.objects',
+    await requestWithDefaults({
+      uri: `${options.url}/api/v1/workgroup`,
+      qs: {
+        username: options.email,
+        api_key: options.apiKey
+      }
+    })
+  );
+
   const lookupResults = createLookupResults(
     options,
     entitiesPartition,
     entitiesThatExistInTS,
-    orgTags
+    orgTags,
+    workGroups
   );
 
   Logger.trace({ lookupResults, entitiesThatExistInTS }, 'Lookup Results');

@@ -3,7 +3,7 @@
     <h1 class="p-title">
       {{fa-icon "info-circle" size="sm"}} Already In TS
     </h1>
-    {{#if interactionDisabled}}
+    {{#if isDeleting}}
       <div class="ioc-deletion-modal">
         <div class="note">
           <span class="p-key">
@@ -163,7 +163,7 @@
           <span class="p-key"><em>NONE</em></span>
         </div>
       {{/if}}
-        <h1 class="p-title .submission-options py-1">
+        <h1 class="p-title submission-options py-1">
           {{fa-icon "cog" size="sm" fixedWidth=true}} Submission Options
         </h1>
       <div>
@@ -245,14 +245,19 @@
           <h1 class="p-title">
             {{fa-icon "tags" fixedWidth=true}} Tags
           </h1>
-          {{#each (limit selectedTags maxTagsInBlock) as |tag tagIndex|}}
-            <a href="{{details.url}}/search?status=active&tags={{tag.name}}" class="tag">
-              {{tag.name}}
-              <button class="tag-btn delete-tag-btn" {{action "deleteTag" tag}} disabled={{interactionDisabled}}>
-                {{fa-icon "times" fixedWidth=true}}
-              </button>
-            </a>
-          {{/each}}
+          {{#if selectedTags.length}}
+            {{#each (limit selectedTags maxTagsInBlock) as |tag tagIndex|}}
+              <a href="{{details.url}}/search?status=active&tags={{tag.name}}" class="tag link">
+                {{tag.name}}
+                <button class="tag-btn delete-tag-btn" {{action "deleteTag" tag}} disabled={{interactionDisabled}}>
+                  {{fa-icon "times" fixedWidth=true}}
+                </button>
+              </a>
+            {{/each}}
+          {{else}}
+            <pre><i>None Selected</i></pre>
+          {{/if}}
+          
 
           <div class="edit-tags-btn-container">
             <span class="p-action" {{action "editTags"}}>Add Tags {{fa-icon (if editingTags "caret-up" "caret-down") fixedWidth=true}}</span>
@@ -306,7 +311,60 @@
           {{/if}}
         </div>
 
-      <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-2">
+        <div class="tag-container">
+          <h1 class="p-title">
+            {{fa-icon "user" fixedWidth=true}} Visibility
+          </h1>
+          {{#if selectedWorkGroups.length}}
+            {{#each selectedWorkGroups as |workGroup workGroupIndex|}}
+              <span class="tag">
+                {{workGroup.name}}
+                <button class="tag-btn delete-tag-btn" {{action "deleteWorkGroup" workGroup}} disabled={{interactionDisabled}}>
+                  {{fa-icon "times" fixedWidth=true}}
+                </button>
+              </span>
+            {{/each}}
+          {{else}}
+            <pre><i>Shared with all users in your organization</i></pre>
+          {{/if}}
+
+          <div class="edit-tags-btn-container">
+            <span class="p-action" {{action "editWorkGroups"}}>Add Workgroups {{fa-icon (if editingWorkGroups "caret-up" "caret-down") fixedWidth=true}}</span>
+          </div>
+
+          {{#if editingWorkGroups}}
+            <div class="edit-tags-container">
+              <div class="input-group add-tag-container">
+                {{#power-select
+                  triggerClass="form-control"
+                  selected=selectedWorkGroup
+                  options=existingWorkGroups
+                  searchEnabled=true
+                  search=(action "searchWorkGroups")
+                  placeholder="Add Workgroup"
+                  searchField="name"
+                  searchMessage="Loading Workgroups ..."
+                  searchPlaceholder="Search Workgroups"
+                  closeOnSelect=true
+                  disabled=interactionDisabled
+                  onOpen=(action "searchWorkGroups" "")
+                  onChange=(action (mut selectedWorkGroup)) as |workGroup|
+                }}
+                  {{workGroup.name}}
+                  {{fa-icon "check-circle" fixedWidth=true}}
+                {{/power-select}}
+
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" {{action "addWorkGroup"}} disabled={{interactionDisabled}}>
+                    {{fa-icon "plus" fixedWidth=true}}
+                  </button>
+                </div>
+              </div>
+            </div>
+          {{/if}}
+        </div>
+
+      <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-0">
         <button {{action "submitItems"}}
                 disabled={{interactionDisabled}}
                 class="p-btn btn btn-secondary m-0">

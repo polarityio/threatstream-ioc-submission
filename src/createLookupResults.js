@@ -3,7 +3,13 @@ const { THREAT_TYPES } = require('./constants');
 
 let maxUniqueKeyNumber = 0;
 
-const createLookupResults = (options, entities, _entitiesThatExistInTS, orgTags) => {
+const createLookupResults = (
+  options,
+  entities,
+  _entitiesThatExistInTS,
+  orgTags,
+  workGroups
+) => {
   const entitiesThatExistInTS = fp.flow(
     fp.filter(({ value }) =>
       fp.any(({ value: _value }) => fp.toLower(value) === fp.toLower(_value), entities)
@@ -33,6 +39,7 @@ const createLookupResults = (options, entities, _entitiesThatExistInTS, orgTags)
           [`entitiesThatExistInTS${maxUniqueKeyNumber}`]: entitiesThatExistInTS,
           [`notFoundEntities${maxUniqueKeyNumber}`]: notFoundEntities,
           [`orgTags${maxUniqueKeyNumber}`]: orgTags,
+          [`workGroups${maxUniqueKeyNumber}`]: workGroups,
           [`threatTypes${maxUniqueKeyNumber}`]: getThreatTypes(entities)
         }
       }

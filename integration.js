@@ -6,6 +6,7 @@ const createRequestWithDefaults = require('./src/createRequestWithDefaults');
 
 const { handleError } = require('./src/handleError');
 const { getLookupResults } = require('./src/getLookupResults');
+const { concat, size } = require('lodash/fp');
 
 let Logger;
 let requestWithDefaults;
@@ -13,7 +14,6 @@ const startup = (logger) => {
   Logger = logger;
   requestWithDefaults = createRequestWithDefaults(Logger);
 };
-
 
 const doLookup = async (entities, { url, uiUrl, ..._options }, cb) => {
   Logger.debug({ entities }, 'Entities');
@@ -40,19 +40,15 @@ const doLookup = async (entities, { url, uiUrl, ..._options }, cb) => {
   cb(null, lookupResults);
 };
 
-
-const onMessage = async ({ data: { action, ...actionParams} }, options, callback) => {
+const onMessage = async ({ data: { action, ...actionParams } }, options, callback) => {
   if (action === 'deleteItem') {
     deleteItem(actionParams, options, Logger, callback);
   } else if (action === 'submitItems') {
-    submitItems(actionParams, options, Logger, callback);
-  } else if (action === 'getId') {
     submitItems(actionParams, options, Logger, callback);
   } else {
     callback(null, {});
   }
 };
-
 
 const deleteItem = async (
   { entity, newIocs, intelObjects },
@@ -60,7 +56,6 @@ const deleteItem = async (
   Logger,
   callback
 ) => {
-
   let _intelId;
   if (!entity.id) {
     const result = await requestWithDefaults({
@@ -98,6 +93,9 @@ const deleteItem = async (
   });
 };
 
+const parseErrorToReadableJSON = (error) =>
+  JSON.parse(JSON.stringify(error, Object.getOwnPropertyNames(error)));
+
 const submitItems = async (
   {
     newIocsToSubmit,
@@ -111,7 +109,8 @@ const submitItems = async (
     submitConfidence,
     submitThreatType,
     orgTags,
-    selectedTagVisibility
+    selectedTagVisibility,
+    selectedWorkGroupIds
   },
   options,
   Logger,
@@ -153,7 +152,8 @@ const submitItems = async (
               default_state: 'active',
               reject_benign: 'false',
               benign_is_public: 'false',
-              intelligence_source: 'Polarity'
+              intelligence_source: 'Polarity',
+              ...(size(selectedWorkGroupIds) && { workgroups: selectedWorkGroupIds })
             }
           }),
         newIocsToSubmit
@@ -174,18 +174,27 @@ const submitItems = async (
     );
 
     return callback(null, {
-      entitiesThatExistInTS: [...newEntities, ...previousEntitiesInTS],
+      entitiesThatExistInTS: fp.concat(newEntities || [], previousEntitiesInTS || []),
       uncreatedEntities,
       orgTags: orgTags.concat(newTags)
     });
   } catch (error) {
-    Logger.trace(
-      { detail: 'Failed to Create IOC in Anomali ThreatStream', error },
+    const err = parseErrorToReadableJSON(error);
+    Logger.error(
+      {
+        detail: 'Failed to Create IOC in Anomali ThreatStream',
+        formattedError: err
+      },
       'IOC Creation Failed'
     );
+    
     return callback({
-      err: error,
-      detail: 'Failed to Create IOC in Anomali ThreatStream'
+      errors: [
+        {
+          err: error,
+          detail: err.message || `Unknown Error`
+        }
+      ]
     });
   }
 };

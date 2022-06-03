@@ -5,11 +5,13 @@ polarity.export = PolarityComponent.extend({
   isAnonymous: false,
   manuallySetConfidence: false,
   orgTags: [],
+  workGroups: [],
   existingTags: [],
   threatTypes: [],
   entitiesThatExistInTS: [],
   newIocs: [],
   newIocsToSubmit: [],
+  selectedWorkGroups: [],
   selectedTags: [{ name: 'Submitted_By_Polarity' }],
   tagsErrorMessage: '',
   maxTagsInBlock: 10,
@@ -27,6 +29,7 @@ polarity.export = PolarityComponent.extend({
   TLP: 'red',
   selectedTag: '',
   editingTags: false,
+  editingWorkGroups: false,
   tagVisibility: [
     { name: 'Anomali Community', value: 'white' },
     { name: 'My Organization', value: 'red' }
@@ -38,8 +41,10 @@ polarity.export = PolarityComponent.extend({
   init() {
     const threatTypes = this.get(`details.threatTypes${this.get('maxUniqueKeyNumber')}`);
     const orgTags = this.get(`details.orgTags${this.get('maxUniqueKeyNumber')}`);
+    const workGroups = this.get(`details.workGroups${this.get('maxUniqueKeyNumber')}`);
     this.set('threatTypes', threatTypes);
     this.set('orgTags', orgTags);
+    this.set('workGroups', workGroups);
 
     this.set(
       'existingTags',
@@ -47,6 +52,8 @@ polarity.export = PolarityComponent.extend({
         name: orgTag
       }))
     );
+    this.set('existingWorkGroups', workGroups);
+
     this.set('submitThreatType', threatTypes[0].type);
 
     this.set(
@@ -78,9 +85,14 @@ polarity.export = PolarityComponent.extend({
         const threatTypes = this.get(
           `details.threatTypes${this.get('maxUniqueKeyNumber')}`
         );
+        const workGroups = this.get(
+          `details.workGroups${this.get('maxUniqueKeyNumber')}`
+        );
         const orgTags = this.get(`details.orgTags${this.get('maxUniqueKeyNumber')}`);
 
         this.set('threatTypes', threatTypes);
+        this.set('workGroups', workGroups);
+        this.set('existingWorkGroups', workGroups);
         this.set('orgTags', orgTags);
         this.set(
           'existingTags',
@@ -228,6 +240,7 @@ polarity.export = PolarityComponent.extend({
             submitTags: outerThis
               .get('selectedTags')
               .map((selectedTag) => selectedTag.name),
+            selectedWorkGroupIds: this.get('selectedWorkGroups').map(({ id }) => id),
             orgTags: outerThis.get('orgTags'),
             selectedTagVisibility: outerThis.get('selectedTagVisibility')
           }
@@ -242,7 +255,9 @@ polarity.export = PolarityComponent.extend({
           outerThis.set(
             'createErrorMessage',
             'Failed to Create IOC: ' +
-              (err && (err.message || err.title || err.description)) || 'Unknown Reason'
+              (err &&
+                (err.detail || err.err || err.message || err.title || err.description)) ||
+              'Unknown Reason'
           );
         })
         .finally(() => {
@@ -286,7 +301,8 @@ polarity.export = PolarityComponent.extend({
                   (_selectedTag) =>
                     _selectedTag.name.toLowerCase().trim() === orgTag.toLowerCase().trim()
                 )
-            );
+            )
+            .map((orgTag) => ({ name: orgTag }));
           outerThis.set('existingTags', newExistingTags);
           resolve(newExistingTags);
         }
@@ -303,6 +319,59 @@ polarity.export = PolarityComponent.extend({
       if (!isDuplicate) {
         this.set('selectedTag', '');
         this.set('selectedTags', selectedTags.concat(selectedTag));
+      }
+    },
+    editWorkGroups: function () {
+      this.toggleProperty(`editingWorkGroups`);
+      this.get('block').notifyPropertyChange('data');
+    },
+    deleteWorkGroup: function (workGroupToDelete) {
+      this.set(
+        'selectedWorkGroups',
+        this.get('selectedWorkGroups').filter(
+          (selectedWorkGroup) => selectedWorkGroup.name !== workGroupToDelete.name
+        )
+      );
+    },
+    searchWorkGroups: function (searchTerm) {
+      const outerThis = this;
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        if (searchTerm) {
+          const foundWorkGroups = outerThis
+            .get('workGroups')
+            .filter((workGroup) =>
+              workGroup.name.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+            );
+          resolve(foundWorkGroups);
+        } else {
+          const notSelectedWorkGroups = outerThis
+            .get('workGroups')
+            .filter(
+              (workGroup) =>
+                !this.get('selectedWorkGroups').some(
+                  (selectedWorkGroup) =>
+                    selectedWorkGroup.name.toLowerCase().trim() ===
+                    workGroup.name.toLowerCase().trim()
+                )
+            )
+          outerThis.set('existingWorkGroups', notSelectedWorkGroups);
+          resolve(notSelectedWorkGroups);
+        }
+      });
+    },
+    addWorkGroup: function () {
+      const selectedWorkGroup = this.get('selectedWorkGroup');
+      const selectedWorkGroups = this.get('selectedWorkGroups');
+
+      let isDuplicate = selectedWorkGroups.some(
+        (workGroup) =>
+          workGroup.name.toLowerCase().trim() ===
+          selectedWorkGroup.name.toLowerCase().trim()
+      );
+
+      if (!isDuplicate) {
+        this.set('selectedWorkGroup', '');
+        this.set('selectedWorkGroups', selectedWorkGroups.concat(selectedWorkGroup));
       }
     }
   }

@@ -97,7 +97,8 @@ table {
 }
 
 .edit-tags-btn-container {
-  margin-top: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .edit-tags-container {
@@ -126,10 +127,25 @@ a.tag.tlp-red {
   color: #ff4559;
 }
 
-div.tag-container {
-  padding-bottom: 5px;
+span.tag {
+  border: 2px solid #000;
+  color: #000;
+  padding: 2px 0px 2px 5px;
+  display: inline-block;
+  margin: 2px 0;
+  word-break: break-all;
 }
 
+div.tag-container {
+  padding-bottom: 5px;
+  & .p-title {
+    margin-top: 15px !important;
+  }
+}
+
+pre {
+  margin: 0;
+}
 div.item:last-child {
   border-bottom: none;
 }
@@ -191,8 +207,8 @@ div.additional-sources-count {
   align-items: center;
   padding-top: 10px;
   & > button {
-    color: #5ccd18 !important; 
+    color: #5ccd18 !important;
     padding-right: 5px;
-    font-size: 12px
+    font-size: 12px;
   }
 }
