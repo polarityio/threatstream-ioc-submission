@@ -8,7 +8,8 @@ const createLookupResults = (
   entities,
   _entitiesThatExistInTS,
   orgTags,
-  workGroups
+  workGroups,
+  trustedCircles
 ) => {
   const entitiesThatExistInTS = fp.flow(
     fp.filter(({ value }) =>
@@ -40,6 +41,7 @@ const createLookupResults = (
           [`notFoundEntities${maxUniqueKeyNumber}`]: notFoundEntities,
           [`orgTags${maxUniqueKeyNumber}`]: orgTags,
           [`workGroups${maxUniqueKeyNumber}`]: workGroups,
+          [`trustedCircles${maxUniqueKeyNumber}`]: trustedCircles,
           [`threatTypes${maxUniqueKeyNumber}`]: getThreatTypes(entities)
         }
       }

@@ -12,6 +12,7 @@ polarity.export = PolarityComponent.extend({
   newIocs: [],
   newIocsToSubmit: [],
   selectedWorkGroups: [],
+  selectedTrustedCircles: [],
   selectedTags: [{ name: 'Submitted_By_Polarity' }],
   tagsErrorMessage: '',
   maxTagsInBlock: 10,
@@ -30,6 +31,7 @@ polarity.export = PolarityComponent.extend({
   selectedTag: '',
   editingTags: false,
   editingWorkGroups: false,
+  editingTrustedCircles: false,
   tagVisibility: [
     { name: 'Anomali Community', value: 'white' },
     { name: 'My Organization', value: 'red' }
@@ -42,9 +44,13 @@ polarity.export = PolarityComponent.extend({
     const threatTypes = this.get(`details.threatTypes${this.get('maxUniqueKeyNumber')}`);
     const orgTags = this.get(`details.orgTags${this.get('maxUniqueKeyNumber')}`);
     const workGroups = this.get(`details.workGroups${this.get('maxUniqueKeyNumber')}`);
+    const trustedCircles = this.get(
+      `details.trustedCircles${this.get('maxUniqueKeyNumber')}`
+    );
     this.set('threatTypes', threatTypes);
     this.set('orgTags', orgTags);
     this.set('workGroups', workGroups);
+    this.set('trustedCircles', trustedCircles);
 
     this.set(
       'existingTags',
@@ -53,6 +59,7 @@ polarity.export = PolarityComponent.extend({
       }))
     );
     this.set('existingWorkGroups', workGroups);
+    this.set('existingTrustedCircles', trustedCircles);
 
     this.set('submitThreatType', threatTypes[0].type);
 
@@ -88,11 +95,16 @@ polarity.export = PolarityComponent.extend({
         const workGroups = this.get(
           `details.workGroups${this.get('maxUniqueKeyNumber')}`
         );
+        const trustedCircles = this.get(
+          `details.trustedCircles${this.get('maxUniqueKeyNumber')}`
+        );
         const orgTags = this.get(`details.orgTags${this.get('maxUniqueKeyNumber')}`);
 
         this.set('threatTypes', threatTypes);
         this.set('workGroups', workGroups);
         this.set('existingWorkGroups', workGroups);
+        this.set('trustedCircles', trustedCircles);
+        this.set('existingTrustedCircles', trustedCircles);
         this.set('orgTags', orgTags);
         this.set(
           'existingTags',
@@ -241,6 +253,9 @@ polarity.export = PolarityComponent.extend({
               .get('selectedTags')
               .map((selectedTag) => selectedTag.name),
             selectedWorkGroupIds: this.get('selectedWorkGroups').map(({ id }) => id),
+            selectedTrustedCircleIds: this.get('selectedTrustedCircles').map(
+              ({ id }) => id
+            ),
             orgTags: outerThis.get('orgTags'),
             selectedTagVisibility: outerThis.get('selectedTagVisibility')
           }
@@ -333,6 +348,19 @@ polarity.export = PolarityComponent.extend({
         )
       );
     },
+    editTrustedCircles: function () {
+      this.toggleProperty(`editingTrustedCircles`);
+      this.get('block').notifyPropertyChange('data');
+    },
+    deleteTrustedCircle: function (trustedCirclesToDelete) {
+      this.set(
+        'selectedTrustedCircles',
+        this.get('selectedTrustedCircles').filter(
+          (selectedTrustedCircle) =>
+            selectedTrustedCircle.name !== trustedCirclesToDelete.name
+        )
+      );
+    },
     searchWorkGroups: function (searchTerm) {
       const outerThis = this;
       return new Ember.RSVP.Promise((resolve, reject) => {
@@ -340,7 +368,10 @@ polarity.export = PolarityComponent.extend({
           const foundWorkGroups = outerThis
             .get('workGroups')
             .filter((workGroup) =>
-              workGroup.name.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+              workGroup.name
+                .toLowerCase()
+                .trim()
+                .includes(searchTerm.toLowerCase().trim())
             );
           resolve(foundWorkGroups);
         } else {
@@ -353,7 +384,7 @@ polarity.export = PolarityComponent.extend({
                     selectedWorkGroup.name.toLowerCase().trim() ===
                     workGroup.name.toLowerCase().trim()
                 )
-            )
+            );
           outerThis.set('existingWorkGroups', notSelectedWorkGroups);
           resolve(notSelectedWorkGroups);
         }
@@ -369,9 +400,58 @@ polarity.export = PolarityComponent.extend({
           selectedWorkGroup.name.toLowerCase().trim()
       );
 
-      if (!isDuplicate) {
+      if (!isDuplicate ) {
         this.set('selectedWorkGroup', '');
-        this.set('selectedWorkGroups', selectedWorkGroups.concat(selectedWorkGroup));
+        selectedWorkGroup &&
+          this.set('selectedWorkGroups', selectedWorkGroups.concat(selectedWorkGroup));
+      }
+    },
+    searchTrustedCircles: function (searchTerm) {
+      const outerThis = this;
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        if (searchTerm) {
+          const foundTrustedCircles = outerThis
+            .get('trustedCircles')
+            .filter((workGroup) =>
+              workGroup.name
+                .toLowerCase()
+                .trim()
+                .includes(searchTerm.toLowerCase().trim())
+            );
+          resolve(foundTrustedCircles);
+        } else {
+          const notSelectedTrustedCircles = outerThis
+            .get('trustedCircles')
+            .filter(
+              (trustedCircle) =>
+                !this.get('selectedTrustedCircles').some(
+                  (selectedTrustedCircle) =>
+                    selectedTrustedCircle.name.toLowerCase().trim() ===
+                    trustedCircle.name.toLowerCase().trim()
+                )
+            );
+          outerThis.set('existingTrustedCircles', notSelectedTrustedCircles);
+          resolve(notSelectedTrustedCircles);
+        }
+      });
+    },
+    addTrustedCircle: function () {
+      const selectedTrustedCircle = this.get('selectedTrustedCircle');
+      const selectedTrustedCircles = this.get('selectedTrustedCircles');
+
+      let isDuplicate = selectedTrustedCircles.some(
+        (trustedCircle) =>
+          trustedCircle.name.toLowerCase().trim() ===
+          selectedTrustedCircle.name.toLowerCase().trim()
+      );
+
+      if (!isDuplicate) {
+        this.set('selectedTrustedCircle', '');
+        selectedTrustedCircle &&
+          this.set(
+            'selectedTrustedCircles',
+            selectedTrustedCircles.concat(selectedTrustedCircle)
+          );
       }
     }
   }

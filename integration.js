@@ -110,7 +110,8 @@ const submitItems = async (
     submitThreatType,
     orgTags,
     selectedTagVisibility,
-    selectedWorkGroupIds
+    selectedWorkGroupIds,
+    selectedTrustedCircleIds
   },
   options,
   Logger,
@@ -153,7 +154,10 @@ const submitItems = async (
               reject_benign: 'false',
               benign_is_public: 'false',
               intelligence_source: 'Polarity',
-              ...(size(selectedWorkGroupIds) && { workgroups: selectedWorkGroupIds })
+              ...(size(selectedWorkGroupIds) && { workgroups: selectedWorkGroupIds }),
+              ...(size(selectedTrustedCircleIds) && {
+                trustedcircles: selectedTrustedCircleIds
+              })
             }
           }),
         newIocsToSubmit
@@ -187,12 +191,17 @@ const submitItems = async (
       },
       'IOC Creation Failed'
     );
-    
+
     return callback({
       errors: [
         {
           err: error,
-          detail: err.message || `Unknown Error`
+          detail:
+            `${err.message}${
+              fp.get('description.message', err)
+                ? `: ${fp.get('description.message', err)}`
+                : ''
+            }` || `Unknown Error`
         }
       ]
     });

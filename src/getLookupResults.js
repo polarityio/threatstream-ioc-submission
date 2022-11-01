@@ -51,13 +51,27 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
       }
     })
   );
+  
+  const trustedCircles = fp.flow(
+    fp.getOr([], 'body.objects'),
+    fp.filter(fp.get('member'))
+  )(
+    await requestWithDefaults({
+      uri: `${options.url}/api/v1/trustedcircle`,
+      qs: {
+        username: options.email,
+        api_key: options.apiKey
+      }
+    })
+  );
 
   const lookupResults = createLookupResults(
     options,
     entitiesPartition,
     entitiesThatExistInTS,
     orgTags,
-    workGroups
+    workGroups,
+    trustedCircles
   );
 
   Logger.trace({ lookupResults, entitiesThatExistInTS }, 'Lookup Results');

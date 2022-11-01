@@ -1,7 +1,13 @@
-<div class={{if (and (not (or newIocs.length newIocsToSubmit.length)) interactionDisabled) "modal-open"}}>
+<div
+  class={{if
+    (and (not (or newIocs.length newIocsToSubmit.length)) interactionDisabled)
+    "modal-open"
+  }}
+>
   {{#if entitiesThatExistInTS.length}}
     <h1 class="p-title">
-      {{fa-icon "info-circle" size="sm"}} Already In TS
+      {{fa-icon "info-circle" size="sm"}}
+      Already In TS
     </h1>
     {{#if isDeleting}}
       <div class="ioc-deletion-modal">
@@ -9,15 +15,20 @@
           <span class="p-key">
             <span class="p-value"><em><b>DANGER:</b></em></span>
             <div>
-              <span>Deleting an indicator cannot be undone and will remove all data for the IOC in Anomali ThreatStream.</span>
+              <span>Deleting an indicator cannot be undone and will remove all data for
+                the IOC in Anomali ThreatStream.</span>
             </div>
             <div>
-              <span>Are you sure you want to delete all content relating to <em><b>{{entityToDelete.value}}</b></em>?</span>
+              <span>Are you sure you want to delete all content relating to
+                <em><b>{{entityToDelete.value}}</b></em>?</span>
             </div>
           </span>
           <div class="delete-confirmation-button">
             <button class="cancel-delete" {{action "cancelItemDeletion"}}>Cancel</button>
-            <button class="p-btn btn btn-danger m-0" {{action "confirmDelete"}}>Delete</button>
+            <button
+              class="p-btn btn btn-danger m-0"
+              {{action "confirmDelete"}}
+            >Delete</button>
           </div>
         </div>
       </div>
@@ -28,9 +39,19 @@
           <tr>
             <td>
               {{#if (not interactionDisabled)}}
-                <a href="{{details.url}}/detail/{{intel.value}}">{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+                <a href="{{details.url}}/detail/{{intel.value}}">{{intel.value}}
+                  {{fa-icon
+                    "external-link"
+                    fixedWidth=true
+                    class="external-link-icon"
+                  }}</a>
               {{else}}
-                <a>{{intel.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+                <a>{{intel.value}}
+                  {{fa-icon
+                    "external-link"
+                    fixedWidth=true
+                    class="external-link-icon"
+                  }}</a>
               {{/if}}
             </td>
             <td class="type">
@@ -56,7 +77,8 @@
     <div class="d-flex flex-row justify-content-between align-items-center">
       <div>
         {{#if deleteIsRunning}}
-          {{fa-icon "spinner-third" fixedWidth=true spin=true}} Deleting...
+          {{fa-icon "spinner-third" fixedWidth=true spin=true}}
+          Deleting...
         {{/if}}
       </div>
 
@@ -74,45 +96,46 @@
   {{/if}}
 
   {{#if (or newIocs.length newIocsToSubmit.length)}}
-      <div class="title-with-button">
-        <h1 class="p-title">
-          {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In TS
-        </h1>
-        {{#if newIocs.length}}
-          <button
-            class="no-style-button add"
-            {{action "addAllSubmitItems"}}
-            title="Add all IOCs to submission list"
-            disabled={{interactionDisabled}}
-          >
-            Add All
-          </button>
-        {{/if}}
-      </div>
-      <table class="w-100">
-        <tbody>
-          {{#each newIocs as |entity|}}
-            <tr>
-              <td>
-                <span>{{entity.value}}</span>
-              </td>
-              <td class="type">
-                <span>{{entity.type}}</span>
-              </td>
-              <td class="icon">
-                <button
-                  class="no-style-button add"
-                  {{action "addSubmitItem" entity}}
-                  title="Add IOC to submission list"
-                  disabled={{interactionDisabled}}
-                >
-                  {{fa-icon "plus" fixedWidth=true}}
-                </button>
-              </td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
+    <div class="title-with-button">
+      <h1 class="p-title">
+        {{fa-icon "sparkles" size="sm" fixedWidth=true}}
+        Not Currently In TS
+      </h1>
+      {{#if newIocs.length}}
+        <button
+          class="no-style-button add"
+          {{action "addAllSubmitItems"}}
+          title="Add all IOCs to submission list"
+          disabled={{interactionDisabled}}
+        >
+          Add All
+        </button>
+      {{/if}}
+    </div>
+    <table class="w-100">
+      <tbody>
+        {{#each newIocs as |entity|}}
+          <tr>
+            <td>
+              <span>{{entity.value}}</span>
+            </td>
+            <td class="type">
+              <span>{{entity.type}}</span>
+            </td>
+            <td class="icon">
+              <button
+                class="no-style-button add"
+                {{action "addSubmitItem" entity}}
+                title="Add IOC to submission list"
+                disabled={{interactionDisabled}}
+              >
+                {{fa-icon "plus" fixedWidth=true}}
+              </button>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
 
     {{#if (not newIocs.length)}}
       <div class="note">
@@ -121,7 +144,8 @@
     {{/if}}
     <div class="title-with-button">
       <h1 class="p-title">
-        {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to TS
+        {{fa-icon "upload" size="sm" fixedWidth=true}}
+        To Be Submitted to TS
       </h1>
       {{#if newIocsToSubmit.length}}
         <button
@@ -158,238 +182,338 @@
         {{/each}}
       </tbody>
     </table>
-      {{#if (not newIocsToSubmit.length)}}
-        <div class="note">
-          <span class="p-key"><em>NONE</em></span>
+    {{#if (not newIocsToSubmit.length)}}
+      <div class="note">
+        <span class="p-key"><em>NONE</em></span>
+      </div>
+    {{/if}}
+    <h1 class="p-title submission-options py-1">
+      {{fa-icon "cog" size="sm" fixedWidth=true}}
+      Submission Options
+    </h1>
+    <div>
+      <label>
+        {{input type="checkbox" checked=isPublic disabled=interactionDisabled}}
+        <span class="align-top">Submit as Public</span>
+      </label>
+    </div>
+    <div>
+      <label>
+        {{input type="checkbox" checked=isAnonymous disabled=interactionDisabled}}
+        <span class="align-top">Is Anonymous</span>
+      </label>
+    </div>
+    <div>
+      <label>
+        {{input
+          type="checkbox"
+          checked=manuallySetConfidence
+          disabled=interactionDisabled
+        }}
+        <span class="align-top">Manually Set Confidence</span>
+      </label>
+    </div>
+    {{#if manuallySetConfidence}}
+      <div class="py-1">
+        <span class="p-key">Confidence: </span>
+        <span class="p-value">{{submitConfidence}}</span>
+        <div>
+          <input
+            type="range"
+            class="w-100 py-1"
+            oninput={{action (mut submitConfidence) value="target.value"}}
+            min="0"
+            max="100"
+            disabled={{interactionDisabled}}
+            value={{submitConfidence}}
+            steps="1"
+          />
         </div>
-      {{/if}}
-        <h1 class="p-title submission-options py-1">
-          {{fa-icon "cog" size="sm" fixedWidth=true}} Submission Options
-        </h1>
-      <div>
-        <label>
-          {{input
-            type="checkbox"
-            checked=isPublic
-            disabled=interactionDisabled
-          }}
-          <span class="align-top">Submit as Public</span>
-        </label>
       </div>
-      <div>
-        <label>
-          {{input
-            type="checkbox"
-            checked=isAnonymous
-            disabled=interactionDisabled
-          }}
-          <span class="align-top">Is Anonymous</span>
-        </label>
-      </div>
-      <div>
-        <label>
-          {{input
-            type="checkbox"
-            checked=manuallySetConfidence
-            disabled=interactionDisabled
-          }}
-          <span class="align-top">Manually Set Confidence</span>
-        </label>
-      </div>
-      {{#if manuallySetConfidence}}
-        <div class="py-1">
-          <span class="p-key">Confidence: </span>
-          <span class="p-value">{{submitConfidence}}</span>
-          <div>
-            <input
-              type="range"
-              class="w-100 py-1"
-              oninput={{action (mut submitConfidence) value="target.value"}}
-              min="0"
-              max="100"
+    {{/if}}
+    <div class="selectContainer pt-1">
+      <span class="p-value">TLP: </span>
+      <select
+        class="w-100"
+        onchange={{action (mut TLP) value="target.value"}}
+        disabled={{interactionDisabled}}
+      >
+        <option value="red">Red</option>
+        <option value="amber">Amber</option>
+        <option value="green">Green</option>
+        <option value="white">White</option>
+      </select>
+    </div>
+    <div class="selectContainer">
+      <span class="p-value">Severity: </span>
+      <select
+        class="w-100"
+        onchange={{action (mut submitSeverity) value="target.value"}}
+        disabled={{interactionDisabled}}
+      >
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="very-high">Very High</option>
+      </select>
+    </div>
+    <div class="selectContainer">
+      <span class="p-value">Threat Type: </span>
+      <select
+        class="w-100"
+        onchange={{action (mut submitThreatType) value="target.value"}}
+        disabled={{interactionDisabled}}
+      >
+        {{#each threatTypes as |threatType|}}
+          <option value="{{threatType.type}}">{{threatType.name}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="tag-container">
+      <h1 class="p-title">
+        {{fa-icon "tags" fixedWidth=true}}
+        Tags
+      </h1>
+      {{#if selectedTags.length}}
+        {{#each (limit selectedTags maxTagsInBlock) as |tag tagIndex|}}
+          <a
+            href="{{details.url}}/search?status=active&tags={{tag.name}}"
+            class="tag link"
+          >
+            {{tag.name}}
+            <button
+              class="tag-btn delete-tag-btn"
+              {{action "deleteTag" tag}}
               disabled={{interactionDisabled}}
-              value={{submitConfidence}}
-              steps="1"
-            />
+            >
+              {{fa-icon "times" fixedWidth=true}}
+            </button>
+          </a>
+        {{/each}}
+      {{else}}
+        <pre><i>None Selected</i></pre>
+      {{/if}}
+
+      <div class="edit-tags-btn-container">
+        <span class="p-action" {{action "editTags"}}>Add Tags
+          {{fa-icon (if editingTags "caret-up" "caret-down") fixedWidth=true}}</span>
+      </div>
+
+      {{#if editingTags}}
+        <div class="edit-tags-container">
+          <div class="edit-visibility-container">
+            {{#power-select
+              options=tagVisibility
+              selected=selectedTagVisibility
+              searchEnabled=false
+              searchField="name"
+              placeholder="Visibility"
+              disabled=interactionDisabled
+              onChange=(action (mut selectedTagVisibility))
+              as |visibility|
+            }}
+              {{visibility.name}}
+            {{/power-select}}
+          </div>
+          <div class="input-group add-tag-container">
+            {{#power-select
+              triggerClass="form-control"
+              selected=selectedTag
+              options=existingTags
+              searchEnabled=true
+              search=(action "searchTags")
+              placeholder="Add Tag"
+              searchField="name"
+              searchMessage="Loading Tags ..."
+              searchPlaceholder="Search tags"
+              closeOnSelect=true
+              disabled=interactionDisabled
+              onOpen=(action "searchTags" "")
+              onChange=(action (mut selectedTag))
+              as |tag|
+            }}
+              {{tag.name}}
+              {{#if tag.isNew}}
+                {{fa-icon "plus-circle" fixedWidth=true}}
+              {{else}}
+                {{fa-icon "check-circle" fixedWidth=true}}
+              {{/if}}
+            {{/power-select}}
+
+            <div class="input-group-append">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                {{action "addTag"}}
+                disabled={{interactionDisabled}}
+              >
+                {{fa-icon "plus" fixedWidth=true}}
+              </button>
+            </div>
           </div>
         </div>
       {{/if}}
-        <div class="selectContainer pt-1">
-          <span class="p-value">TLP: </span>
-          <select class="w-100" onchange={{action (mut TLP) value="target.value"}} disabled={{interactionDisabled}}>
-              <option value="red">Red</option>
-              <option value="amber">Amber</option>
-              <option value="green">Green</option>
-              <option value="white">White</option>
-          </select>
-        </div>
-        <div class="selectContainer">
-          <span class="p-value">Severity: </span>
-          <select class="w-100" onchange={{action (mut submitSeverity) value="target.value"}} disabled={{interactionDisabled}}>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="very-high">Very High</option>
-          </select>
-        </div>
-        <div class="selectContainer">
-          <span class="p-value">Threat Type: </span>
-          <select class="w-100" onchange={{action (mut submitThreatType) value="target.value"}} disabled={{interactionDisabled}}>
-            {{#each threatTypes as |threatType|}}
-              <option value="{{threatType.type}}">{{threatType.name}}</option>
-            {{/each}}
-          </select>
-        </div>
+    </div>
 
-        <div class="tag-container">
-          <h1 class="p-title">
-            {{fa-icon "tags" fixedWidth=true}} Tags
-          </h1>
-          {{#if selectedTags.length}}
-            {{#each (limit selectedTags maxTagsInBlock) as |tag tagIndex|}}
-              <a href="{{details.url}}/search?status=active&tags={{tag.name}}" class="tag link">
-                {{tag.name}}
-                <button class="tag-btn delete-tag-btn" {{action "deleteTag" tag}} disabled={{interactionDisabled}}>
-                  {{fa-icon "times" fixedWidth=true}}
-                </button>
-              </a>
-            {{/each}}
-          {{else}}
-            <pre><i>None Selected</i></pre>
-          {{/if}}
-          
+    <div class="tag-container">
+      <h1 class="p-title">
+        {{fa-icon "user" fixedWidth=true}}
+        Visibility
+      </h1>
+      {{#if (or selectedWorkGroups.length selectedTrustedCircles.length)}}
+        {{#each selectedWorkGroups as |workGroup workGroupIndex|}}
+          <span class="tag">
+            WG: {{workGroup.name}}
+            <button
+              class="tag-btn delete-tag-btn"
+              {{action "deleteWorkGroup" workGroup}}
+              disabled={{interactionDisabled}}
+            >
+              {{fa-icon "times" fixedWidth=true}}
+            </button>
+          </span>
+        {{/each}}
+        {{#each selectedTrustedCircles as |trustedCircle trustedCircleIndex|}}
+          <span class="tag">
+            TC: {{trustedCircle.name}}
+            <button
+              class="tag-btn delete-tag-btn"
+              {{action "deleteTrustedCircle" trustedCircle}}
+              disabled={{interactionDisabled}}
+            >
+              {{fa-icon "times" fixedWidth=true}}
+            </button>
+          </span>
+        {{/each}}
+      {{else}}
+        <pre><i>Shared with all users in your organization</i></pre>
+      {{/if}}
 
-          <div class="edit-tags-btn-container">
-            <span class="p-action" {{action "editTags"}}>Add Tags {{fa-icon (if editingTags "caret-up" "caret-down") fixedWidth=true}}</span>
-          </div>
-
-          {{#if editingTags}}
-            <div class="edit-tags-container">
-              <div class="edit-visibility-container">
-                {{#power-select
-                  options=tagVisibility
-                  selected=selectedTagVisibility
-                  searchEnabled=false
-                  searchField="name"
-                  placeholder="Visibility"
-                  disabled=interactionDisabled
-                  onChange=(action (mut selectedTagVisibility)) as |visibility|}}
-                  {{visibility.name}}
-                {{/power-select}}
-              </div>
-              <div class="input-group add-tag-container">
-                {{#power-select
-                  triggerClass="form-control"
-                  selected=selectedTag
-                  options=existingTags
-                  searchEnabled=true
-                  search=(action "searchTags")
-                  placeholder="Add Tag"
-                  searchField="name"
-                  searchMessage="Loading Tags ..."
-                  searchPlaceholder="Search tags"
-                  closeOnSelect=true
-                  disabled=interactionDisabled
-                  onOpen=(action "searchTags" "")
-                  onChange=(action (mut selectedTag)) as |tag|
-                }}
-                  {{tag.name}}
-                  {{#if tag.isNew}}
-                      {{fa-icon "plus-circle" fixedWidth=true}}
-                  {{else}}
-                      {{fa-icon "check-circle" fixedWidth=true}}
-                  {{/if}}
-                {{/power-select}}
-
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary" type="button" {{action "addTag"}} disabled={{interactionDisabled}}>
-                    {{fa-icon "plus" fixedWidth=true}}
-                  </button>
-                </div>
-              </div>
-            </div>
-          {{/if}}
-        </div>
-
-        <div class="tag-container">
-          <h1 class="p-title">
-            {{fa-icon "user" fixedWidth=true}} Visibility
-          </h1>
-          {{#if selectedWorkGroups.length}}
-            {{#each selectedWorkGroups as |workGroup workGroupIndex|}}
-              <span class="tag">
-                {{workGroup.name}}
-                <button class="tag-btn delete-tag-btn" {{action "deleteWorkGroup" workGroup}} disabled={{interactionDisabled}}>
-                  {{fa-icon "times" fixedWidth=true}}
-                </button>
-              </span>
-            {{/each}}
-          {{else}}
-            <pre><i>Shared with all users in your organization</i></pre>
-          {{/if}}
-
-          <div class="edit-tags-btn-container">
-            <span class="p-action" {{action "editWorkGroups"}}>Add Workgroups {{fa-icon (if editingWorkGroups "caret-up" "caret-down") fixedWidth=true}}</span>
-          </div>
-
-          {{#if editingWorkGroups}}
-            <div class="edit-tags-container">
-              <div class="input-group add-tag-container">
-                {{#power-select
-                  triggerClass="form-control"
-                  selected=selectedWorkGroup
-                  options=existingWorkGroups
-                  searchEnabled=true
-                  search=(action "searchWorkGroups")
-                  placeholder="Add Workgroup"
-                  searchField="name"
-                  searchMessage="Loading Workgroups ..."
-                  searchPlaceholder="Search Workgroups"
-                  closeOnSelect=true
-                  disabled=interactionDisabled
-                  onOpen=(action "searchWorkGroups" "")
-                  onChange=(action (mut selectedWorkGroup)) as |workGroup|
-                }}
-                  {{workGroup.name}}
-                  {{fa-icon "check-circle" fixedWidth=true}}
-                {{/power-select}}
-
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary" type="button" {{action "addWorkGroup"}} disabled={{interactionDisabled}}>
-                    {{fa-icon "plus" fixedWidth=true}}
-                  </button>
-                </div>
-              </div>
-            </div>
-          {{/if}}
-        </div>
-
-      <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-0">
-        <button {{action "submitItems"}}
-                disabled={{interactionDisabled}}
-                class="p-btn btn btn-secondary m-0">
-          {{#if createIsRunning}}
-            {{fa-icon "spinner-third" fixedWidth=true spin=true}}
-          {{else}}
-            Submit IOCs
-          {{/if}}
-        </button>
-
-        {{#if createMessage}}
-          <div class="create-message alert alert-info m-0">
-            {{createMessage}}
-          </div>
-        {{/if}}
-
-        {{#if createErrorMessage}}
-          <div class="create-message alert alert-danger m-0">
-            {{createErrorMessage}}
-          </div>
-        {{/if}}
+      <div class="edit-tags-btn-container">
+        <span class="p-action" {{action "editWorkGroups"}}>Add Workgroups
+          {{fa-icon
+            (if editingWorkGroups "caret-up" "caret-down")
+            fixedWidth=true
+          }}</span>
       </div>
+
+      {{#if editingWorkGroups}}
+        <div class="edit-tags-container">
+          <div class="input-group add-tag-container">
+            {{#power-select
+              triggerClass="form-control"
+              selected=selectedWorkGroup
+              options=existingWorkGroups
+              searchEnabled=true
+              search=(action "searchWorkGroups")
+              placeholder="Add Workgroup"
+              searchField="name"
+              searchMessage="Loading Workgroups ..."
+              searchPlaceholder="Search Workgroups"
+              closeOnSelect=true
+              disabled=interactionDisabled
+              onOpen=(action "searchWorkGroups" "")
+              onChange=(action (mut selectedWorkGroup))
+              as |workGroup|
+            }}
+              {{workGroup.name}}
+              {{fa-icon "check-circle" fixedWidth=true}}
+            {{/power-select}}
+
+            <div class="input-group-append">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                {{action "addWorkGroup"}}
+                disabled={{interactionDisabled}}
+              >
+                {{fa-icon "plus" fixedWidth=true}}
+              </button>
+            </div>
+          </div>
+        </div>
+      {{/if}}
+
+
+      <div class="edit-tags-btn-container">
+        <span class="p-action" {{action "editTrustedCircles"}}>Add Trusted Circles
+          {{fa-icon
+            (if editingTrustedCircles "caret-up" "caret-down")
+            fixedWidth=true
+          }}</span>
+      </div>
+
+      {{#if editingTrustedCircles}}
+        <div class="edit-tags-container">
+          <div class="input-group add-tag-container">
+            {{#power-select
+              triggerClass="form-control"
+              selected=selectedTrustedCircle
+              options=existingTrustedCircles
+              searchEnabled=true
+              search=(action "searchTrustedCircles")
+              placeholder="Add Trusted Circle"
+              searchField="name"
+              searchMessage="Loading Trusted Circles ..."
+              searchPlaceholder="Search Trusted Circles"
+              closeOnSelect=true
+              disabled=interactionDisabled
+              onOpen=(action "searchTrustedCircles" "")
+              onChange=(action (mut selectedTrustedCircle))
+              as |trustedGroup|
+            }}
+              {{trustedGroup.name}}
+              {{fa-icon "check-circle" fixedWidth=true}}
+            {{/power-select}}
+
+            <div class="input-group-append">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                {{action "addTrustedCircle"}}
+                disabled={{interactionDisabled}}
+              >
+                {{fa-icon "plus" fixedWidth=true}}
+              </button>
+            </div>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+    <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-0">
+      <button
+        {{action "submitItems"}}
+        disabled={{interactionDisabled}}
+        class="p-btn btn btn-secondary m-0"
+      >
+        {{#if createIsRunning}}
+          {{fa-icon "spinner-third" fixedWidth=true spin=true}}
+        {{else}}
+          Submit IOCs
+        {{/if}}
+      </button>
+
+      {{#if createMessage}}
+        <div class="create-message alert alert-info m-0">
+          {{createMessage}}
+        </div>
+      {{/if}}
+
+      {{#if createErrorMessage}}
+        <div class="create-message alert alert-danger m-0">
+          {{createErrorMessage}}
+        </div>
+      {{/if}}
+    </div>
   {{/if}}
 </div>
-{{#if (and (not entitiesThatExistInTS.length) (not (or newIocs.length newIocsToSubmit.length)))}}
+{{#if
+  (and
+    (not entitiesThatExistInTS.length) (not (or newIocs.length newIocsToSubmit.length))
+  )
+}}
   <div class="note">
     <span class="p-key"><em>All Already In ThreatStream IOCs have been deleted</em></span>
   </div>
