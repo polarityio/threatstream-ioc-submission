@@ -8,23 +8,26 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
 
   const extractValue = fp.flow(fp.get('value'), fp.toLower);
 
-  const entitiesThatExistInTS = await partitionFlatMap(
-    async (entities) =>
-      fp.getOr(
-        [],
-        'body.objects',
-        await requestWithDefaults({
-          url: `${options.url}/api/v2/intelligence`,
-          method: 'get',
-          qs: {
-            username: options.email,
-            api_key: options.apiKey,
-            value__regexp: fp.flow(fp.map(extractValue), fp.join('|'))(entities)
-          }
-        })
-      ),
-    5,
-    entitiesPartition
+  const entitiesThatExistInTS = fp.uniqBy(
+    'value',
+    await partitionFlatMap(
+      async (entities) =>
+        fp.getOr(
+          [],
+          'body.objects',
+          await requestWithDefaults({
+            url: `${options.url}/api/v2/intelligence`,
+            method: 'get',
+            qs: {
+              username: options.email,
+              api_key: options.apiKey,
+              value__regexp: fp.flow(fp.map(extractValue), fp.join('|'))(entities)
+            }
+          })
+        ),
+      5,
+      entitiesPartition
+    )
   );
 
   const orgTags = fp.flow(

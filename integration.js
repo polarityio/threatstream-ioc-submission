@@ -6,7 +6,6 @@ const createRequestWithDefaults = require('./src/createRequestWithDefaults');
 
 const { handleError } = require('./src/handleError');
 const { getLookupResults } = require('./src/getLookupResults');
-const { concat, size } = require('lodash/fp');
 
 let Logger;
 let requestWithDefaults;
@@ -154,8 +153,8 @@ const submitItems = async (
               reject_benign: 'false',
               benign_is_public: 'false',
               intelligence_source: 'Polarity',
-              ...(size(selectedWorkGroupIds) && { workgroups: selectedWorkGroupIds }),
-              ...(size(selectedTrustedCircleIds) && {
+              ...(fp.size(selectedWorkGroupIds) && { workgroups: selectedWorkGroupIds }),
+              ...(fp.size(selectedTrustedCircleIds) && {
                 trustedcircles: selectedTrustedCircleIds
               })
             }
@@ -178,7 +177,11 @@ const submitItems = async (
     );
 
     return callback(null, {
-      entitiesThatExistInTS: fp.concat(newEntities || [], previousEntitiesInTS || []),
+      entitiesThatExistInTS: fp.flow(
+        fp.filter(fp.negate(fp.get('isInSubmitList'))),
+        fp.concat(newEntities || []),
+        fp.map(fp.flow(fp.assign({}), fp.assign({ isInSubmitList: false })))
+      )(previousEntitiesInTS || []),
       uncreatedEntities,
       orgTags: orgTags.concat(newTags)
     });

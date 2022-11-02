@@ -170,12 +170,21 @@ polarity.export = PolarityComponent.extend({
         });
     },
     removeAllSubmitItems: function () {
-      const allIOCs = this.get('newIocs').concat(this.get('newIocsToSubmit'));
+      const newIocsToSubmit = this.get('newIocsToSubmit');
+      const notExistingInTsEntities = newIocsToSubmit.filter((x) => !x.uuid);
 
+      const allIOCs = this.get('newIocs').concat(notExistingInTsEntities);
       this.set('newIocs', allIOCs);
       this.set('newIocsToSubmit', []);
+      this.set(
+        'entitiesThatExistInTS',
+        this.get('entitiesThatExistInTS').map((entityThatExistInTS) =>
+          Object.assign({}, entityThatExistInTS, {
+            isInSubmitList: false
+          })
+        )
+      );
 
-      this.updateCategorySubmitDisabled([]);
       this.get('block').notifyPropertyChange('data');
     },
     addAllSubmitItems: function () {
@@ -183,12 +192,30 @@ polarity.export = PolarityComponent.extend({
 
       this.set('newIocs', []);
       this.set('newIocsToSubmit', allIOCs);
-
-      this.updateCategorySubmitDisabled(allIOCs);
       this.get('block').notifyPropertyChange('data');
     },
     removeSubmitItem: function (entity) {
-      this.set('newIocs', this.get('newIocs').concat(entity));
+      const entitiesThatExistInTS = this.get('entitiesThatExistInTS');
+      const existingInTSEntityIndex = entitiesThatExistInTS.reduce(
+        (agg, tsEntity, index) => (tsEntity.value === entity.value ? index : agg),
+        -1
+      );
+      if (existingInTSEntityIndex > -1) {
+        const entitiesThatExistInTsWithFlagOn = [
+          ...entitiesThatExistInTS.slice(0, existingInTSEntityIndex),
+          Object.assign({}, entitiesThatExistInTS[existingInTSEntityIndex], {
+            isInSubmitList: false
+          }),
+          ...entitiesThatExistInTS.slice(
+            existingInTSEntityIndex + 1,
+            entitiesThatExistInTS.length
+          )
+        ];
+        this.set('entitiesThatExistInTS', entitiesThatExistInTsWithFlagOn);
+      } else {
+        this.set('newIocs', this.get('newIocs').concat(entity));
+      }
+
       this.set(
         'newIocsToSubmit',
         this.get('newIocsToSubmit').filter(({ value }) => value !== entity.value)
@@ -200,6 +227,25 @@ polarity.export = PolarityComponent.extend({
         'newIocs',
         this.get('newIocs').filter(({ value }) => value !== entity.value)
       );
+      const entitiesThatExistInTS = this.get('entitiesThatExistInTS');
+      const existingInTSEntityIndex = entitiesThatExistInTS.reduce(
+        (agg, tsEntity, index) => (tsEntity.value === entity.value ? index : agg),
+        -1
+      );
+
+      if (existingInTSEntityIndex > -1) {
+        const entitiesThatExistInTsWithFlagOn = [
+          ...entitiesThatExistInTS.slice(0, existingInTSEntityIndex),
+          Object.assign({}, entitiesThatExistInTS[existingInTSEntityIndex], {
+            isInSubmitList: true
+          }),
+          ...entitiesThatExistInTS.slice(
+            existingInTSEntityIndex + 1,
+            entitiesThatExistInTS.length
+          )
+        ];
+        this.set('entitiesThatExistInTS', entitiesThatExistInTsWithFlagOn);
+      }
       this.set('newIocsToSubmit', this.get('newIocsToSubmit').concat(entity));
       this.get('block').notifyPropertyChange('data');
     },
@@ -400,7 +446,7 @@ polarity.export = PolarityComponent.extend({
           selectedWorkGroup.name.toLowerCase().trim()
       );
 
-      if (!isDuplicate ) {
+      if (!isDuplicate) {
         this.set('selectedWorkGroup', '');
         selectedWorkGroup &&
           this.set('selectedWorkGroups', selectedWorkGroups.concat(selectedWorkGroup));

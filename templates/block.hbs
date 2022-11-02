@@ -58,7 +58,15 @@
               <span>{{intel.type}}</span>
             </td>
             {{#if block.userOptions.allowDelete}}
-              <td class="icon">
+              <td class="icon existing">
+                <button
+                  class="no-style-button add {{if (or intel.isInSubmitList (not block.userOptions.allowResubmission)) "hidden"}}"
+                  {{action "addSubmitItem" intel}}
+                  title="Resubmit IOC"
+                  disabled={{interactionDisabled}}
+                >
+                  {{fa-icon "plus" fixedWidth=true}}
+                </button>
                 <button
                   class="no-style-button delete"
                   {{action "initiateItemDeletion" intel}}
@@ -163,7 +171,7 @@
         {{#each newIocsToSubmit as |entity|}}
           <tr>
             <td class="intellValue">
-              <span>{{entity.value}}</span>
+              <span>{{entity.value}}{{if entity.uuid "*"}}</span>
             </td>
             <td class="type">
               <span>{{entity.type}}</span>
