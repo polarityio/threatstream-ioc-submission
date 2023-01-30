@@ -6,12 +6,15 @@
 .p-title {
   font-weight: 600;
   padding-top: 3px !important;
+
   &:first-child {
     margin-top: 5px !important;
   }
+
   &.submission-options {
     margin-top: 15px !important;
   }
+
   height: 15px !important;
   min-height: 15px !important;
 }
@@ -22,7 +25,17 @@
 
 table {
   td.icon {
-    width: 25px;
+    width: 45px;
+
+    &.existing {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .hidden {
+        visibility: hidden !important;
+      }
+    }
   }
 
   td.type {
@@ -113,9 +126,11 @@ table {
 a.tag {
   border: 2px solid #000;
   color: #000;
+
   &:hover {
     color: #0082bc;
   }
+
   padding: 2px 0px 2px 5px;
   display: inline-block;
   margin: 2px 0;
@@ -138,6 +153,7 @@ span.tag {
 
 div.tag-container {
   padding-bottom: 5px;
+
   & .p-title {
     margin-top: 15px !important;
   }
@@ -146,6 +162,7 @@ div.tag-container {
 pre {
   margin: 0;
 }
+
 div.item:last-child {
   border-bottom: none;
 }
@@ -206,6 +223,7 @@ div.additional-sources-count {
   justify-content: space-between;
   align-items: center;
   padding-top: 10px;
+
   & > button {
     color: #5ccd18 !important;
     padding-right: 5px;

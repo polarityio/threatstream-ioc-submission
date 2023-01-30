@@ -8,23 +8,26 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
 
   const extractValue = fp.flow(fp.get('value'), fp.toLower);
 
-  const entitiesThatExistInTS = await partitionFlatMap(
-    async (entities) =>
-      fp.getOr(
-        [],
-        'body.objects',
-        await requestWithDefaults({
-          url: `${options.url}/api/v2/intelligence`,
-          method: 'get',
-          qs: {
-            username: options.email,
-            api_key: options.apiKey,
-            value__regexp: fp.flow(fp.map(extractValue), fp.join('|'))(entities)
-          }
-        })
-      ),
-    5,
-    entitiesPartition
+  const entitiesThatExistInTS = fp.uniqBy(
+    'value',
+    await partitionFlatMap(
+      async (entities) =>
+        fp.getOr(
+          [],
+          'body.objects',
+          await requestWithDefaults({
+            url: `${options.url}/api/v2/intelligence`,
+            method: 'get',
+            qs: {
+              username: options.email,
+              api_key: options.apiKey,
+              value__regexp: fp.flow(fp.map(extractValue), fp.join('|'))(entities)
+            }
+          })
+        ),
+      5,
+      entitiesPartition
+    )
   );
 
   const orgTags = fp.flow(
@@ -51,13 +54,27 @@ const getLookupResults = async (entities, options, requestWithDefaults, Logger) 
       }
     })
   );
+  
+  const trustedCircles = fp.flow(
+    fp.getOr([], 'body.objects'),
+    fp.filter(fp.get('member'))
+  )(
+    await requestWithDefaults({
+      uri: `${options.url}/api/v1/trustedcircle`,
+      qs: {
+        username: options.email,
+        api_key: options.apiKey
+      }
+    })
+  );
 
   const lookupResults = createLookupResults(
     options,
     entitiesPartition,
     entitiesThatExistInTS,
     orgTags,
-    workGroups
+    workGroups,
+    trustedCircles
   );
 
   Logger.trace({ lookupResults, entitiesThatExistInTS }, 'Lookup Results');
