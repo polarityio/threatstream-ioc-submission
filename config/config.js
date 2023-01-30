@@ -90,7 +90,7 @@ module.exports = {
         'If checked, users will be able to resubmit already found indicators to Anomali Threatstream. (this setting must be set to `User can view only`).',
       default: false,
       type: 'boolean',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     }
   ]
