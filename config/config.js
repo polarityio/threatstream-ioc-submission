@@ -70,24 +70,24 @@ module.exports = {
       description: 'The API Key for Anomali ThreatStream.',
       default: '',
       type: 'password',
-      userCanEdit: true,
-      adminOnly: false
+      userCanEdit: false,
+      adminOnly: true
     },
     {
       key: 'allowDelete',
       name: 'Allow IOC Deletion',
       description:
-        'If checked, users will be able to permanently delete an indicator from Anomali Threatstream. (this setting must be set to `User can view only`).',
+        'If checked, users will be able to permanently delete an indicator from Anomali Threatstream. (this setting must be set to `Users can view only`).',
       default: true,
       type: 'boolean',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     },
     {
       key: 'allowResubmission',
       name: 'Allow IOC Resubmission',
       description:
-        'If checked, users will be able to resubmit already found indicators to Anomali Threatstream. (this setting must be set to `User can view only`).',
+        'If checked, users will be able to resubmit already found indicators to Anomali Threatstream. (this setting must be set to `Users can view only`).',
       default: false,
       type: 'boolean',
       userCanEdit: false,
