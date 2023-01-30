@@ -1,7 +1,7 @@
 {
-  "main": "./integration.js",
   "name": "threatstream-ioc-submission",
   "version": "3.2.0-beta",
+  "main": "./integration.js",
   "private": true,
   "license": "MIT",
   "author": "Polarity",

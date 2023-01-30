@@ -4,6 +4,7 @@ module.exports = {
   description:
     "Submit Indicators of Compromise to Anomali's ThreatStream platform.",
   entityTypes: ['IPv4', 'IPv6', 'email', 'md5', 'sha1', 'sha256', 'domain', 'url'],
+  defaultColor: 'light-purple',
   styles: ['./styles/styles.less'],
   onDemandOnly: true,
   block: {
