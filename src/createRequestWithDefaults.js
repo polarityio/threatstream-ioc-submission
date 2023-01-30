@@ -56,7 +56,7 @@ const createRequestWithDefaults = (Logger) => {
         postRequestFunctionResults = await postRequestSuccessFunction(result);
       } catch (error) {
         const formattedError = parseErrorToReadableJSON(error);
-        Logger.trace({ formattedError, formattedError }, 'Request Failed');
+        Logger.error({ formattedError }, 'Request Failed');
         postRequestFunctionResults = await postRequestFailureFunction(
           error,
           _requestOptions
