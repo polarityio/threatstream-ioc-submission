@@ -6,6 +6,9 @@ const { checkForInternalServiceError } = require('./handleError');
 
 const _configFieldIsValid = (field) => typeof field === 'string' && field.length > 0;
 
+const parseErrorToReadableJSON = (error) =>
+  JSON.parse(JSON.stringify(error, Object.getOwnPropertyNames(error)));
+
 const createRequestWithDefaults = (Logger) => {
   const {
     request: { ca, cert, key, passphrase, rejectUnauthorized, proxy }
@@ -52,6 +55,8 @@ const createRequestWithDefaults = (Logger) => {
 
         postRequestFunctionResults = await postRequestSuccessFunction(result);
       } catch (error) {
+        const formattedError = parseErrorToReadableJSON(error);
+        Logger.error({ formattedError }, 'Request Failed');
         postRequestFunctionResults = await postRequestFailureFunction(
           error,
           _requestOptions
