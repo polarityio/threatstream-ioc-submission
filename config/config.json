@@ -1,4 +1,5 @@
 {
+  "polarityIntegrationUuid": "e02d3380-cce1-11ed-aeee-075d3490155d",
   "name": "Anomali ThreatStream IOC Submission",
   "acronym": "TSI",
   "description": "Submit Indicators of Compromise to Anomali's ThreatStream platform.",
