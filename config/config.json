@@ -7,9 +7,9 @@
     "IPv4",
     "IPv6",
     "email",
-    "md5",
-    "sha1",
-    "sha256",
+    "MD5",
+    "SHA1",
+    "SHA256",
     "domain",
     "url"
   ],
