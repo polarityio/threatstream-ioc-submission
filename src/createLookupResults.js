@@ -30,6 +30,7 @@ const createLookupResults = (
   return [
     {
       entity: { ...entities[0], value: 'ThreatStream IOC Submission' },
+      displayValue: 'ThreatStream IOC Submission',
       isVolatile: true,
       data: {
         summary,
