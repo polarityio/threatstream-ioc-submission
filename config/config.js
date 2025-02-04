@@ -95,7 +95,7 @@ module.exports = {
       key: 'submitForApproval',
       name: 'Submit for Approval',
       description:
-        'If checked, the information to be sent to Anomali Threatstream will wait for an admin approval.',
+        'If checked, submitted indicators will require approval before being added to Anomali Threatstream.',
       default: false,
       type: 'boolean',
       userCanEdit: false,
