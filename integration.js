@@ -110,7 +110,8 @@ const submitItems = async (
     orgTags,
     selectedTagVisibility,
     selectedWorkGroupIds,
-    selectedTrustedCircleIds
+    selectedTrustedCircleIds,
+    submitForApproval
   },
   options,
   Logger,
@@ -121,17 +122,14 @@ const submitItems = async (
       fp.map(
         (entity) =>
           requestWithDefaults({
-            url: `${options.url}/api/v1/intelligence/import/`,
+            url: `${options.url}/api/v2/intelligence/import/`,
             method: 'POST',
-            qs: {
-              username: options.email,
-              api_key: options.apiKey
-            },
             headers: {
-              entity
+              Authorization: `Token ${options.apiKey}`,
+              'Content-Type': 'application/json'
             },
-            formData: {
-              datatext: entity.value,
+            body: {
+              value: entity.value,
               classification: submitPublic ? 'public' : 'private',
               is_anonymous: JSON.stringify(isAnonymous),
               ...(manuallySetConfidence && { source_confidence_weight: '100' }),
@@ -148,6 +146,7 @@ const submitItems = async (
                   submitTags
                 )
               ),
+              default_state: submitForApproval ? 'pending' : 'active',
               expiration_ts: 'null',
               default_state: 'active',
               reject_benign: 'false',
@@ -165,7 +164,7 @@ const submitItems = async (
 
     const { true: newEntities, false: uncreatedEntities } = fp.flow(
       fp.map((successResult) => ({
-        ...fp.get('request.headers.entity', successResult),
+        ...fp.get('request.body.value', successResult),
         success: fp.get('body.success', successResult)
       })),
       fp.groupBy('success')
