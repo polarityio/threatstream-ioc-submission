@@ -312,13 +312,11 @@ polarity.export = PolarityComponent.extend({
           outerThis.set('newIocsToSubmit', []);
           outerThis.set('createMessage', 'Successfully Created IOCs');
         })
-        .catch((err) => {
+        .catch((error) => {
           outerThis.set(
             'createErrorMessage',
             'Failed to Create IOC: ' +
-              (err &&
-                (err.detail || err.err || err.message || err.title || err.description)) ||
-              'Unknown Reason'
+              (error && error.title ? `"${error.title}"` : 'Unknown Reason')
           );
         })
         .finally(() => {

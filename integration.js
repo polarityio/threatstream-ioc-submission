@@ -110,26 +110,29 @@ const submitItems = async (
     orgTags,
     selectedTagVisibility,
     selectedWorkGroupIds,
-    selectedTrustedCircleIds,
-    submitForApproval
+    selectedTrustedCircleIds
   },
   options,
   Logger,
   callback
 ) => {
+  const submitForApproval = options.submitForApproval;
   try {
     const creationResults = await Promise.all(
       fp.map(
         (entity) =>
           requestWithDefaults({
-            url: `${options.url}/api/v2/intelligence/import/`,
+            url: `${options.url}/api/v1/intelligence/import/`,
             method: 'POST',
-            headers: {
-              Authorization: `Token ${options.apiKey}`,
-              'Content-Type': 'application/json'
+            qs: {
+              username: options.email,
+              api_key: options.apiKey
             },
-            body: {
-              value: entity.value,
+            headers: {
+              entity
+            },
+            formData: {
+              datatext: entity.value,
               classification: submitPublic ? 'public' : 'private',
               is_anonymous: JSON.stringify(isAnonymous),
               ...(manuallySetConfidence && { source_confidence_weight: '100' }),
@@ -146,9 +149,8 @@ const submitItems = async (
                   submitTags
                 )
               ),
-              default_state: submitForApproval ? 'pending' : 'active',
               expiration_ts: 'null',
-              default_state: 'active',
+              default_state: submitForApproval ? 'pending' : 'active',
               reject_benign: 'false',
               benign_is_public: 'false',
               intelligence_source: 'Polarity',
@@ -164,7 +166,7 @@ const submitItems = async (
 
     const { true: newEntities, false: uncreatedEntities } = fp.flow(
       fp.map((successResult) => ({
-        ...fp.get('request.body.value', successResult),
+        ...fp.get('request.headers.entity', successResult),
         success: fp.get('body.success', successResult)
       })),
       fp.groupBy('success')
