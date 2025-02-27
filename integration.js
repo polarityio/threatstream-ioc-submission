@@ -116,6 +116,7 @@ const submitItems = async (
   Logger,
   callback
 ) => {
+  const submitForApproval = options.submitForApproval;
   try {
     const creationResults = await Promise.all(
       fp.map(
@@ -149,7 +150,7 @@ const submitItems = async (
                 )
               ),
               expiration_ts: 'null',
-              default_state: 'active',
+              default_state: submitForApproval ? 'pending' : 'active',
               reject_benign: 'false',
               benign_is_public: 'false',
               intelligence_source: 'Polarity',
