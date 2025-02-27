@@ -1,8 +1,7 @@
 module.exports = {
   name: 'Anomali ThreatStream IOC Submission',
   acronym: 'TSI',
-  description:
-    "Submit Indicators of Compromise to Anomali's ThreatStream platform.",
+  description: "Submit Indicators of Compromise to Anomali's ThreatStream platform.",
   entityTypes: ['IPv4', 'IPv6', 'email', 'MD5', 'SHA1', 'SHA256', 'domain', 'url'],
   defaultColor: 'light-purple',
   styles: ['./styles/styles.less'],
@@ -28,7 +27,7 @@ module.exports = {
     key: '',
     passphrase: '',
     ca: '',
-    proxy: ""
+    proxy: ''
   },
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal
@@ -91,6 +90,16 @@ module.exports = {
       type: 'boolean',
       userCanEdit: false,
       adminOnly: false
+    },
+    {
+      key: 'submitForApproval',
+      name: 'Submit for Approval',
+      description:
+        'If checked, submitted indicators will require approval before being added to Anomali Threatstream.',
+      default: false,
+      type: 'boolean',
+      userCanEdit: false,
+      adminOnly: true
     }
   ]
 };
