@@ -1,0 +1,144 @@
+{
+  "url": "https://threatstream.example.com",
+  "maxUniqueKeyNumber": 42,
+  "summary42": [
+    "Entities Found",
+    "New Entites"
+  ],
+  "entitiesThatExistInTS42": [
+    {
+      "id": "123456789",
+      "value": "malicious.example.com",
+      "type": "domain",
+      "itype": "mal_domain",
+      "threat_type": "malware",
+      "confidence": 75,
+      "severity": "high",
+      "status": "active",
+      "tags": [
+        {
+          "name": "APT28",
+          "tlp": "red"
+        },
+        {
+          "name": "C2",
+          "tlp": "red"
+        }
+      ],
+      "created_ts": "2024-01-15T10:30:00.000Z",
+      "modified_ts": "2024-01-15T14:22:00.000Z",
+      "source": "AlienVault OTX"
+    },
+    {
+      "id": "987654321",
+      "value": "198.51.100.42",
+      "type": "ip",
+      "itype": "mal_ip",
+      "threat_type": "c2",
+      "confidence": 85,
+      "severity": "high",
+      "status": "active",
+      "tags": [
+        {
+          "name": "Botnet",
+          "tlp": "amber"
+        }
+      ],
+      "created_ts": "2024-01-14T08:15:00.000Z",
+      "modified_ts": "2024-01-15T12:00:00.000Z",
+      "source": "Recorded Future"
+    }
+  ],
+  "notFoundEntities42": [
+    {
+      "value": "suspicious-site.example",
+      "type": "domain",
+      "types": ["domain"],
+      "isIP": false
+    },
+    {
+      "value": "203.0.113.89",
+      "type": "ip",
+      "types": ["IPv4"],
+      "isIP": true
+    },
+    {
+      "value": "d41d8cd98f00b204e9800998ecf8427e",
+      "type": "hash",
+      "types": ["hash", "MD5"],
+      "isIP": false
+    }
+  ],
+  "orgTags42": [
+    "Submitted_By_Polarity",
+    "High_Priority",
+    "Incident_Response",
+    "APT_Campaign",
+    "Phishing",
+    "Ransomware",
+    "C2_Infrastructure"
+  ],
+  "workGroups42": [
+    {
+      "id": "wg-001",
+      "name": "SOC Team",
+      "resource_uri": "/api/v1/workgroup/wg-001/"
+    },
+    {
+      "id": "wg-002",
+      "name": "Threat Intelligence",
+      "resource_uri": "/api/v1/workgroup/wg-002/"
+    },
+    {
+      "id": "wg-003",
+      "name": "Incident Response",
+      "resource_uri": "/api/v1/workgroup/wg-003/"
+    }
+  ],
+  "trustedCircles42": [
+    {
+      "id": "tc-101",
+      "name": "Financial Services ISAC",
+      "member": true,
+      "description": "Information sharing for financial sector",
+      "resource_uri": "/api/v1/trustedcircle/tc-101/"
+    },
+    {
+      "id": "tc-102",
+      "name": "Regional Threat Sharing",
+      "member": true,
+      "description": "Regional cybersecurity collaboration",
+      "resource_uri": "/api/v1/trustedcircle/tc-102/"
+    }
+  ],
+  "threatTypes42": [
+    {
+      "type": "malware",
+      "name": "Malware"
+    },
+    {
+      "type": "c2",
+      "name": "C2"
+    },
+    {
+      "type": "phish",
+      "name": "Phish"
+    },
+    {
+      "type": "apt",
+      "name": "Actor"
+    },
+    {
+      "type": "compromised",
+      "name": "Compromised"
+    },
+    {
+      "type": "exploit",
+      "name": "Exploit"
+    },
+    {
+      "type": "suspicious",
+      "name": "Suspicious"
+    }
+  ]
+}

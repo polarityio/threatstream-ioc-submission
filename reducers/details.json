@@ -1,0 +1,40 @@
+{
+  "root": {
+    "path": "",
+    "on_null": "return_empty"
+  },
+  "pipeline": [
+    {
+      "op": "copy",
+      "from": "url",
+      "to": "reduced_results.url"
+    },
+    {
+      "op": "copy",
+      "from": "maxUniqueKeyNumber",
+      "to": "reduced_results.maxUniqueKeyNumber"
+    },
+    {
+      "op": "project_and_replace",
+      "path": "",
+      "include_keys": true,
+      "project": {
+        "summary*": "$value",
+        "entitiesThatExistInTS*": "$value",
+        "notFoundEntities*": "$value",
+        "orgTags*": "$value",
+        "workGroups*": "$value",
+        "trustedCircles*": "$value",
+        "threatTypes*": "$value"
+      }
+    },
+    {
+      "op": "prune",
+      "strategy": "empty_values",
+      "target": ""
+    }
+  ],
+  "output": {
+    "result": "$working"
+  }
+}
